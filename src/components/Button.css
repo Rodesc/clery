@@ -1,0 +1,13 @@
+button {
+	margin: auto 0;
+	/*shape*/
+	width: 128px;
+	height: 80%;
+	border-radius: 8px;
+	border: none;
+
+	/*decoration*/
+	background: linear-gradient(#6667FF, #2698EA);
+	color: white;
+	font-size: inherit;
+  }
