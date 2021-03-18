@@ -1,21 +1,24 @@
 import './Header.css';
-import Button from './Button'
+import { Button, LinkButton } from './Button'
+import { Link } from 'react-router-dom';
 
 type headerProps = {
-	loggedIn: boolean
+	loggedIn?: boolean
 }
 
 function header(props: headerProps) {
+	var loggedIn = false;
+	if(props.loggedIn) loggedIn = true;
 	return (
 	    <header className="header">
 			<img className="logo" alt='logo' src='img/Logo.png' />
             <p className="brand" >Clery.ai</p>
 			<div className='identification'>
-				{props.loggedIn? 
+				{loggedIn? 
 				<Button value='Déconnexion' />
 				:<>
-					<Button value="S'enregistrer" />
-					<a href='/#'>Connexion</a>
+					<LinkButton value="S'enregistrer" linkTo='/register'/>
+					<Link to='/login'>Connexion</Link>
 				</>}
 			</div>
         </header>

@@ -1,23 +1,20 @@
-import './Register.css'
+import './Auth.css'
 import Header from '../components/Header'
-import Button from '../components/Button'
+import {Button, LinkButton} from '../components/Button'
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
-type registerProps = {
+type authProps = {
 	showLogin:boolean
 }
 
-function Register(props:registerProps) {
+function Auth(props:authProps) {
 	const [login, setLogin] = useState(props.showLogin)
 	return (
-		<>	
-			<Header loggedIn={false}/>
-			<div className='pageContent'>
-				<LeftPanel showLogin={login}/>
-				<RightPanel />
-			</div>
-			
-		</>
+		<div className='pageContent'>
+			<LeftPanel showLogin={login}/>
+			<RightPanel />
+		</div>
 	)
 }
 
@@ -44,7 +41,7 @@ function LoginForm() {
 	return (
 		<form className='loginForm'>
 			<div className='cercle'><img src='img/logo.png'/></div>
-			<span>Pas encore membre? <a href='/#'>Créer un compte</a></span>
+			<span>Pas encore membre? <Link to='/register'>Créer un compte</Link></span>
 			<input type='email' className='formInput' placeholder='Email'/>
 			<input type='password' className='formInput' placeholder='Mot de passe'/>
 			<Button value="Se connecter" style={{width:'100%', height:'48px', marginTop: '24px'}}/>
@@ -55,7 +52,7 @@ function RegisterForm() {
 	return (
 		<form className='registerForm'>
 			<div className='cercle'><img src='img/logo.png'/></div>
-			<span>Déjà membre? <a href='/#'>Se connecter</a></span>
+			<span>Déjà membre? <Link to='/login'>Se connecter</Link></span>
 			<input type='text' className='formInput' placeholder='Nom'/>
 			<input type='email' className='formInput' placeholder='Email'/>
 			<input type='password' className='formInput' placeholder='Mot de passe'/>
@@ -65,4 +62,4 @@ function RegisterForm() {
 	)
 }
 
-export default Register
+export default Auth
