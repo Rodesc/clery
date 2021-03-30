@@ -11,7 +11,7 @@ type authProps = {
 function Auth(props:authProps) {
 	const [login, setLogin] = useState(props.showLogin)
 	return (
-		<div className='pageContent'>
+		<div className='authPageContent'>
 			<LeftPanel showLogin={login}/>
 			<RightPanel />
 		</div>
