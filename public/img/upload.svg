@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="31.083" height="31.083" viewBox="0 0 31.083 31.083">
+  <g id="Group" transform="translate(55.212 -201.915) rotate(30)">
+    <path id="Vector" d="M0,0H31.083V31.083H0Z" transform="translate(53.142 202.47) rotate(-30)" fill="none"/>
+    <path id="Vector-2" data-name="Vector" d="M20.722,3.808H12.341A1.3,1.3,0,0,1,11.27,3.24L9.451.566A1.3,1.3,0,0,0,8.381,0H2.59A2.59,2.59,0,0,0,0,2.59V18.132a2.59,2.59,0,0,0,2.59,2.59H20.722a2.59,2.59,0,0,0,2.59-2.59V6.4a2.59,2.59,0,0,0-2.59-2.59Z" transform="translate(59.097 205.013) rotate(-30)" fill="none" stroke="#2698ea" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.648"/>
+    <path id="Line" d="M0,6.476V0" transform="translate(73.724 207.036) rotate(-30)" fill="none" stroke="#2698ea" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.648"/>
+    <path id="Line-2" data-name="Line" d="M0,0,2.435,2.435" transform="translate(73.636 211.753) rotate(-30)" fill="none" stroke="#2698ea" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.648"/>
+    <path id="Line-3" data-name="Line" d="M2.435,0,0,2.435" transform="translate(75.745 210.536) rotate(-30)" fill="none" stroke="#2698ea" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.648"/>
+  </g>
+</svg>
