@@ -1,4 +1,4 @@
-import { CSSProperties, FunctionComponent, MouseEventHandler } from 'react';
+import { CSSProperties, FunctionComponent, MouseEventHandler, MouseEvent } from 'react';
 import { useHistory } from 'react-router-dom';
 import './Button.css';
 
@@ -7,13 +7,11 @@ type buttonProps = {
 	style?: CSSProperties,
 	linkTo?: string,
 	inactive?:boolean,
-	action?:MouseEventHandler
+	action?: (event: MouseEvent<HTMLButtonElement>) => void
 }
 
-const Button = ({value, style, inactive}: buttonProps) => {
-	return (
-		<button style={style} >{value}</button>
-	)
+const Button = ({value, style, inactive, action}: buttonProps) => {
+	return <button onClick={action} style={style} >{value}</button>
 }
 
 // const Button = ({value, style, inactive}: buttonProps) => {
@@ -28,19 +26,10 @@ const LinkButton = ({value, style, linkTo, inactive}: buttonProps) => {
 	console.log(goTo)
 	const history = useHistory()
 
-	return (
-		<button style={style} onClick={ () => history.push(goTo)}>{value}</button>
-	)
-}
-
-const ActionButton = ({value, style, inactive, action}: buttonProps) => {
-	return (
-		<button onClick={action} style={style} >{value}</button>
-	)
+	return <button style={style} onClick={ () => history.push(goTo)}>{value}</button>
 }
 
 export {
     Button,
-    LinkButton,
-	ActionButton
+    LinkButton
 }
