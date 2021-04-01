@@ -1,10 +1,13 @@
 import './Upload.css'
-import { ChangeEvent, useState } from 'react'
-import { Button, ActionButton } from '../components/Button';
+import { ChangeEvent, MouseEvent, useState } from 'react'
+import { Button } from '../components/Button';
+import { useHistory } from 'react-router-dom';
 
 
 const Upload = () => {
 	const [file, setFile] = useState<File>()
+	const history = useHistory()
+
 	function handleFile(event:ChangeEvent) {
 		let fileList = (event.target as HTMLInputElement).files;
 		if (!fileList) return;
@@ -12,6 +15,14 @@ const Upload = () => {
 		let file = fileList[0]
 		setFile(file)
 	}
+	
+	function analyse(event:MouseEvent<HTMLButtonElement>){
+		history.push({
+			pathname: '/analysis',
+			state: {file: file}
+		})
+	}
+
 	return (
 		<div id='uploadPageContent'>
 			<div className='uploadSection'>
@@ -36,7 +47,7 @@ const Upload = () => {
 						<div className='lastModif'> <img src='img/time.svg' alt=''/> modifié le: {file?file.lastModified:'...'}</div>
 						<div className='fileSize'> <img src='img/doc.svg' alt=''/> {file?file.size:'...'} b</div>
 						{file?
-							<Button value='Analyser' style={{width:'100%',height:'48px'}} action={()=>{}}/>
+							<Button value='Analyser' style={{width:'100%',height:'48px'}} action={analyse}/>
 							:<Button value="En attente d'un document..." inactive={true} style={{width:'100%',height:'48px'}}/>
 						}
 					</div>
