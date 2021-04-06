@@ -1,27 +1,48 @@
 import { CSSProperties, FunctionComponent, MouseEventHandler, MouseEvent } from 'react';
 import { useHistory } from 'react-router-dom';
-import { ArrowFunction } from 'typescript';
-import './Button.css';
 
-type buttonProps = {
-	value: string,
-	style?: CSSProperties,
-	linkTo?: string,
-	inactive?: boolean,
-	action?: Function | void
+
+const Button = ({value, customStyle, inactive, action}: buttonProps) => {
+	var style = {
+		...baseBtnStyle,
+		...customStyle
+	}  
+	return <button style={style} onClick={action}>{value}</button>
 }
 
-const Button = ({value, style, inactive, action}: buttonProps) => {
-	return <button onClick={() => action} style={style}> {value} </button>
-}
-
-const LinkButton = ({value, style, linkTo, inactive}: buttonProps) => {
+const LinkButton = ({value, customStyle, linkTo, inactive}: buttonProps) => {
 	let goTo:string;
-	linkTo? goTo = linkTo : goTo = '';
-	console.log(goTo)
+	linkTo? goTo = linkTo : goTo = ''
+	var style = {
+		...baseBtnStyle,
+		...customStyle
+	} 
 	const history = useHistory()
 
 	return <button style={style} onClick={ () => history.push(goTo)}>{value}</button>
+}
+
+type buttonProps = {
+	value: string,
+	customStyle?: CSSProperties,
+	linkTo?: string,
+	inactive?: boolean,
+	action?: MouseEventHandler<HTMLButtonElement>
+}
+
+const baseBtnStyle: CSSProperties = {
+	margin: 'auto 0',
+	
+	/*shape*/
+	width: '128px',
+	height: '80%',
+	borderRadius:' 8px',
+	border: 'none',
+
+	/*decoration*/
+	background: 'linear-gradient(#6667FF, #2698EA)',
+	color: 'white',
+	fontSize: 'inherit',
 }
 
 export {
