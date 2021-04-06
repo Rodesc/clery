@@ -1,24 +1,19 @@
 import { CSSProperties, FunctionComponent, MouseEventHandler, MouseEvent } from 'react';
 import { useHistory } from 'react-router-dom';
+import { ArrowFunction } from 'typescript';
 import './Button.css';
 
 type buttonProps = {
 	value: string,
 	style?: CSSProperties,
 	linkTo?: string,
-	inactive?:boolean,
-	action?: (event: MouseEvent<HTMLButtonElement>) => void
+	inactive?: boolean,
+	action?: Function | void
 }
 
 const Button = ({value, style, inactive, action}: buttonProps) => {
-	return <button onClick={action} style={style} >{value}</button>
+	return <button onClick={() => action} style={style}> {value} </button>
 }
-
-// const Button = ({value, style, inactive}: buttonProps) => {
-// 	return (
-// 		<button style={style} >{value}</button>
-// 	)
-// }
 
 const LinkButton = ({value, style, linkTo, inactive}: buttonProps) => {
 	let goTo:string;
