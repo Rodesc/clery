@@ -1,4 +1,4 @@
-.authPageContent{
+.authPageContent {
 	position: absolute;
 	top: 0;
 
@@ -6,20 +6,21 @@
 
 	min-height: 100vh;
 	width: 100%;
-	
+
 	z-index: -1;
 }
-.leftPanel{
+.leftPanel {
 	width: 50%;
 	padding-top: 192px;
 }
-.rightPanel{
+.rightPanel {
 	width: 50%;
 	padding-top: 64px;
-	background-color: #2F3142;
+	background-color: #2f3142;
 }
 
-.loginForm, .registerForm{
+.loginForm,
+.registerForm {
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -29,29 +30,30 @@
 	font-size: 14px;
 	font-weight: lighter;
 }
-.formInput{
+.formInput {
 	margin-top: 8px;
 	margin-bottom: 8px;
-	
+
 	padding-left: 8px;
-	
+
 	height: 48px;
 	border-radius: 8px;
-	
+
 	border: 1px solid;
-	border-color: #64646C;
-	background-color: #2F3142;
-	
+	border-color: #64646c;
+	background-color: #2f3142;
+
 	font-size: 16px;
-	color: #B1B1B5;
+	color: #b1b1b5;
 }
 
-::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
-	color: #B1B1B5;
+::placeholder {
+	/* Chrome, Firefox, Opera, Safari 10.1+ */
+	color: #b1b1b5;
 	opacity: 1; /* Firefox */
-  }
+}
 
-.cercle{
+.cercle {
 	/* position: absolute;
 	top: 0;
 	left: 0; */
@@ -59,9 +61,9 @@
 	width: 48px;
 	border-radius: 50%;
 	border: 2px solid;
-	border-color: #2698EA;
+	border-color: #2698ea;
 
-	background-color: #2F3142;
+	background-color: #2f3142;
 }
 .cercle img {
 	height: inherit;
@@ -71,11 +73,11 @@
 
 a {
 	display: inline-block;
-	color:#FFA561;
+	color: #ffa561;
 }
 span {
 	margin-top: 32px;
 	margin-bottom: 32px;
-	
-	color:#B1B1B5;
+
+	color: #b1b1b5;
 }

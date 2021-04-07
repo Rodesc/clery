@@ -1,9 +1,9 @@
-#uploadPageContent{
+#uploadPageContent {
 	position: absolute;
 	top: 0;
 
 	width: 100%;
-	
+
 	background-color: #252836;
 
 	display: flex;
@@ -18,7 +18,6 @@
 	width: 60%;
 
 	text-align: center;
-
 }
 
 .uploadWrapper {
@@ -33,38 +32,39 @@
 	height: 10px;
 	width: 40%;
 	height: 40%;
-	padding-bottom:  40%;
+	padding-bottom: 40%;
 	margin-right: 10%;
 
-	border: 1px dashed #B1B1B5;
+	border: 1px dashed #b1b1b5;
 	border-radius: 32px;
 
-	background-color: #2F3142;
+	background-color: #2f3142;
 }
 .uploadBox:hover {
-	border: 1px solid #2698EA;
+	border: 1px solid #2698ea;
 	box-shadow: #252836;
-	box-shadow: 0px 0px 10px 0px #2698EA;
-
+	box-shadow: 0px 0px 10px 0px #2698ea;
 }
 .verticalCenter {
 	position: absolute;
 	margin: 50% 50%;
-	transform: translate(-50%,-50%);
+	transform: translate(-50%, -50%);
 	width: inherit;
 }
-.verticalCenter .green, .uploadBox:hover img{
-	filter: invert(71%) sepia(68%) saturate(2655%) hue-rotate(95deg) brightness(91%) contrast(101%);
+.verticalCenter .green,
+.uploadBox:hover img {
+	filter: invert(71%) sepia(68%) saturate(2655%) hue-rotate(95deg)
+		brightness(91%) contrast(101%);
 }
 
 #fileField {
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	opacity: 0;
+	width: 100%;
+	height: 100%;
+	display: block;
 }
 
 /* ===== FILE INFO BOX ===== */
@@ -74,15 +74,15 @@
 	padding: 16px;
 	margin-left: 10%;
 
-	border: 1px solid #B1B1B5;
+	border: 1px solid #b1b1b5;
 	border-radius: 32px;
 
-	background-color: #2F3142;
+	background-color: #2f3142;
 	box-shadow: 0px 0px 30px 10px #17181f;
 
-	color: #B1B1B5;
+	color: #b1b1b5;
 	font-size: 12px;
-	
+
 	text-align: left;
 }
 
@@ -105,7 +105,7 @@
 	overflow: hidden;
 	white-space: nowrap;
 }
-.lastModif img{
+.lastModif img {
 	width: 12px;
 }
 
@@ -117,14 +117,14 @@
 	overflow: hidden;
 	white-space: nowrap;
 }
-.fileSize img{
+.fileSize img {
 	width: 11px;
 }
 
 /* ===== historySection ===== */
-.historySection{
+.historySection {
 	padding-top: 64px;
-	background-color: #1F1D2B;
+	background-color: #1f1d2b;
 }
 
 .historyWrapper {
@@ -140,11 +140,11 @@
 	height: 96px;
 	border-radius: 8px;
 
-	border: 1px solid #2698EA;
-	
+	border: 1px solid #2698ea;
+
 	display: flex;
 	flex-direction: row;
-	background-color: #2F3142;
+	background-color: #2f3142;
 }
 
 .fileElem span {
@@ -152,17 +152,17 @@
 }
 
 .fileType {
-	margin: 24px 5%; 
+	margin: 24px 5%;
 
 	width: 48px;
-	height: 48px;	
-	
+	height: 48px;
+
 	border-radius: 12px;
 
-	background:linear-gradient(#F3AC79, #FF8F63); 
+	background: linear-gradient(#f3ac79, #ff8f63);
 }
 
-.fileType p{
+.fileType p {
 	text-align: center;
 	vertical-align: middle;
 

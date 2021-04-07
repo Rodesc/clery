@@ -1,42 +1,54 @@
-import { CSSProperties, FunctionComponent, MouseEventHandler, MouseEvent } from 'react';
-import { useHistory } from 'react-router-dom';
+import {
+	CSSProperties,
+	FunctionComponent,
+	MouseEventHandler,
+	MouseEvent,
+} from 'react'
+import { useHistory } from 'react-router-dom'
 
-
-const Button = ({value, customStyle, inactive, action}: buttonProps) => {
-	var style = {
+const Button = ({ value, customStyle, inactive, action }: buttonProps) => {
+	const style = {
 		...baseBtnStyle,
-		...customStyle
-	}  
-	return <button style={style} onClick={action}>{value}</button>
+		...customStyle,
+	}
+	return (
+		<button style={style} onClick={action}>
+			{value}
+		</button>
+	)
 }
 
-const LinkButton = ({value, customStyle, linkTo, inactive}: buttonProps) => {
-	let goTo:string;
-	linkTo? goTo = linkTo : goTo = ''
-	var style = {
+const LinkButton = ({ value, customStyle, linkTo, inactive }: buttonProps) => {
+	let goTo: string
+	linkTo ? (goTo = linkTo) : (goTo = '')
+	const style = {
 		...baseBtnStyle,
-		...customStyle
-	} 
+		...customStyle,
+	}
 	const history = useHistory()
 
-	return <button style={style} onClick={ () => history.push(goTo)}>{value}</button>
+	return (
+		<button style={style} onClick={() => history.push(goTo)}>
+			{value}
+		</button>
+	)
 }
 
 type buttonProps = {
-	value: string,
-	customStyle?: CSSProperties,
-	linkTo?: string,
-	inactive?: boolean,
+	value: string
+	customStyle?: CSSProperties
+	linkTo?: string
+	inactive?: boolean
 	action?: MouseEventHandler<HTMLButtonElement>
 }
 
 const baseBtnStyle: CSSProperties = {
 	margin: 'auto 0',
-	
+
 	/*shape*/
 	width: '128px',
 	height: '80%',
-	borderRadius:' 8px',
+	borderRadius: ' 8px',
 	border: 'none',
 
 	/*decoration*/
@@ -45,7 +57,4 @@ const baseBtnStyle: CSSProperties = {
 	fontSize: 'inherit',
 }
 
-export {
-    Button,
-    LinkButton
-}
+export { Button, LinkButton }
