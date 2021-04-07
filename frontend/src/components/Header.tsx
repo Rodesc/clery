@@ -2,11 +2,12 @@ import './Header.css';
 import { Button, LinkButton } from './Button'
 import { Link } from 'react-router-dom';
 
-type headerProps = {
-	loggedIn?: boolean
-}
-
 function header(props: headerProps) {
+	
+	const logOut = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		props.logOutUser(e)
+	}
+
 	var loggedIn = false;
 	if(props.loggedIn) loggedIn = true;
 	return (
@@ -15,7 +16,7 @@ function header(props: headerProps) {
             <p className="brand" >Clery.ai</p>
 			<div className='identification'>
 				{loggedIn? 
-				<Button value='Déconnexion' />
+				<Button value='Déconnexion' action={logOut}/>
 				:<>
 					<LinkButton value="S'enregistrer" linkTo='/register'/>
 					<Link to='/login'>Connexion</Link>
@@ -23,6 +24,12 @@ function header(props: headerProps) {
 			</div>
         </header>
 	)
+}
+
+
+type headerProps = {
+	loggedIn?: boolean,
+	logOutUser: Function
 }
 
 export default header
