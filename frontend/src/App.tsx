@@ -12,7 +12,7 @@ import {
 	Switch,
 	useHistory,
 } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 const App = () => {
 	const [flashMessages, setFlashMessages] = useState<flashMessage[]>([])

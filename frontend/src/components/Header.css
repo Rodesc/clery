@@ -9,7 +9,7 @@ header {
 	font-size: 32px;
 }
 
-.logo {
+#logo {
 	position: absolute;
 	left: 0;
 	top: 0;
@@ -18,13 +18,13 @@ header {
 	user-select: none;
 }
 
-p.brand {
+p#brand {
 	position: absolute;
 	left: 64px;
 	transform: translateY(-50%);
 }
 
-.identification {
+#identification {
 	position: absolute;
 	height: 100%;
 	right: 0;
@@ -39,4 +39,5 @@ p.brand {
 a {
 	margin: auto 0;
 	margin-right: 24px;
+	color: #fff;
 }

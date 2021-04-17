@@ -10,10 +10,12 @@ function header(props: headerProps) {
 	let loggedIn = false
 	if (props.loggedIn) loggedIn = true
 	return (
-		<header className="header">
-			<img className="logo" alt="logo" src="img/Logo.png" />
-			<p className="brand">Clery.ai</p>
-			<div className="identification">
+		<header>
+			<img id="logo" alt="logo" src="img/Logo.png" />
+			<p id="brand">
+				<Link to="/">Clery.ai</Link>
+			</p>
+			<div id="identification">
 				{loggedIn ? (
 					<Button value="Déconnexion" action={logOut} />
 				) : (
