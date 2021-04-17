@@ -1,0 +1,40 @@
+version: '3'
+
+services: # list all services for your application
+    storage_viewer:
+        image: phpmyadmin/phpmyadmin
+        container_name: phpmyadmin
+        environment: ['PMA_ARBITRARY=1', 'PMA_HOST=users-db']
+        restart: always
+        ports: ['8080:80']
+        volumes: ['/sessions']
+        depends_on: ['users-db']
+
+    # database of users
+    users-db:
+        image: mariadb
+        restart: always
+        ports: ['3002:5984']
+        environment:
+            MYSQL_ROOT_PASSWORD: clerypassword
+            MYSQL_DATABASE: clery-users
+        volumes: [
+                './user-data:/var/lib/mysql', # database data storage on host
+                './db-config:/docker-entrypoint-initdb.d', # database init file
+            ]
+
+    # users microservice
+    users-service:
+        image: rodesc/clery-users:latest
+        depends_on: ['users-db']
+        ports: ['3001:80']
+        restart: always
+        environment:
+            DB_HOST: users-db
+            DB_NAME: clery-users
+            DB_USER: root
+            DB_PASSWORD: clerypassword
+
+networks:
+    scapp-net:
+        external: true
