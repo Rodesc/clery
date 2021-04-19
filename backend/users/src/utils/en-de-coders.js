@@ -1,17 +1,20 @@
 const moment = require('moment')
-const jwt = require('jwt-simple')
+const jwt = require('jsonwebtoken')
 
-function encodeToken(user) {
+function encodeToken(user_id, email, is_owner) {
 	var payload = {
 		exp: moment().add(14, 'days').unix(),
 		iat: moment().unix(),
-		user: user,
+		user_id: user_id,
+		email: email,
+		is_owner: is_owner,
 	}
-	return jwt.encode(payload, process.env.TOKEN_SECRET)
+
+	return jwt.sign(payload, process.env.JWT_KEY)
 }
 
 function decodeToken(token) {
-	return jwt.decode(token, process.env.TOKEN_SECRET)
+	return jwt.verify(token, process.env.JWT_KEY)
 }
 
 module.exports = {
