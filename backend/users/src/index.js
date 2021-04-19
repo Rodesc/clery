@@ -1,9 +1,10 @@
 const express = require('express')
 const db = require('./utils/db')
+const { isAuthenticated, encryptPassword } = require('./utils/middleware')
 
 const app = express()
 
-app.use(express.urlencoded()) // parse application/json
+app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
 const port = process.env.port || 80
@@ -14,9 +15,15 @@ app.get('/status', (req, res) => {
 	res.status(200).send({ status: 'ok' })
 })
 
+app.get('/login/:email/:password', db.getUser)
+
+app.get('/login/:token', db.getUserByToken)
+
+app.post('/companyowner', encryptPassword, db.createCompanyOwner)
+
 app.post('/user', (req, res) => {
 	console.log(`Creating user`)
-	db.createUser(req.body.username, req.body.password)
+	db.loginUser(req, res)
 	res.status(200).send({ status: 'ok' })
 })
 

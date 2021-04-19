@@ -1,11 +1,18 @@
-CREATE TABLE users (
-    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    prenom VARCHAR(100),
-	nom VARCHAR(100),
-	email VARCHAR(255) NOT NULL UNIQUE,
-	date_inscription DATE NOT NULL,
-	user_type INT DEFAULT 1
+
+CREATE TABLE companies (
+	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+	company_name VARCHAR(255) NOT NULL UNIQUE
 );
 
-INSERT INTO users(prenom, nom, email, date_inscription, user_type) VALUES
-('admin', 'admin', 'rodolphe.deschaetzen@student.uclouvain.be', CURDATE(), 0);
+
+CREATE TABLE users (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    first_name VARCHAR(100) NOT NULL,
+	last_name VARCHAR(100) NOT NULL,
+	email VARCHAR(255) NOT NULL UNIQUE,
+	password VARCHAR(100) NOT NULL,
+	company_id INT NOT NULL,
+	is_owner BOOLEAN NOT NULL,
+	date_inscription DATE NOT NULL,
+	FOREIGN KEY (company_id) REFERENCES companies(id)
+);
