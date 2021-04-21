@@ -12,7 +12,7 @@ const Button = ({ value, customStyle, inactive, action }: buttonProps) => {
 		...customStyle,
 	}
 	return (
-		<button style={style} onClick={action}>
+		<button style={style} type="button" onClick={action}>
 			{value}
 		</button>
 	)
@@ -28,7 +28,7 @@ const LinkButton = ({ value, customStyle, linkTo, inactive }: buttonProps) => {
 	const history = useHistory()
 
 	return (
-		<button style={style} onClick={() => history.push(goTo)}>
+		<button style={style} type="button" onClick={() => history.push(goTo)}>
 			{value}
 		</button>
 	)
