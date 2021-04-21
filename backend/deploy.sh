@@ -23,5 +23,10 @@ if [ "$STATUS" = "update" ] || [ "$STATUS" = "updateAndRun" ]; then
   sh update.sh "$STATUS"
   cd ..
 
+  # update gateway microservice
+  cd gateway/ || exit
+  sh update.sh "$STATUS"
+  cd ..
+
 fi
 docker-compose up --remove-orphans

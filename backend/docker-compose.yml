@@ -36,6 +36,15 @@ services: # list all services for your application
             DB_PASSWORD: clerypassword
             JWT_KEY: 1284f18a8a027173483a1cd563db5c51
 
+    # users microservice
+    gateway-service:
+        image: rodesc/clery-gateway:latest
+        depends_on: ['users-service']
+        ports: ['3000:80']
+        restart: always
+        environment:
+            JWT_KEY: 1284f18a8a027173483a1cd563db5c51
+
 networks:
     scapp-net:
         external: true
