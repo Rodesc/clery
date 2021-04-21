@@ -1,8 +1,23 @@
 const express = require('express')
 const db = require('./utils/db')
-const { isAuthenticated, encryptPassword } = require('./utils/middleware')
+const { encryptPassword } = require('./utils/middleware')
 
 const app = express()
+
+// Add headers
+app.use(function (req, res, next) {
+	res.setHeader('Access-Control-Allow-Origin', '*')
+	res.setHeader(
+		'Access-Control-Allow-Methods',
+		'GET, POST, OPTIONS, PUT, PATCH, DELETE'
+	)
+	res.setHeader(
+		'Access-Control-Allow-Headers',
+		'X-Requested-With,content-type'
+	)
+	res.setHeader('Access-Control-Allow-Credentials', true)
+	next()
+})
 
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
@@ -15,17 +30,11 @@ app.get('/status', (req, res) => {
 	res.status(200).send({ status: 'ok' })
 })
 
-app.get('/login/:email/:password', db.getUser)
+app.get('/user/:email/:password', db.getUser)
 
-app.get('/login/:token', db.getUserByToken)
+app.get('/user/:token', db.getUserByToken)
 
 app.post('/companyowner', encryptPassword, db.createCompanyOwner)
-
-app.post('/user', (req, res) => {
-	console.log(`Creating user`)
-	db.loginUser(req, res)
-	res.status(200).send({ status: 'ok' })
-})
 
 // start the Express server
 app.listen(port, () => {

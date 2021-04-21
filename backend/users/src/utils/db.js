@@ -85,8 +85,16 @@ const createCompanyOwner = async (req, res, next) => {
 }
 
 async function getUserByToken(req, res) {
+	// const authorization = req.header('Authorization')
+	// if (!authorization) {
+	// 	return res.status(401).send({
+	// 		message: 'No bearer token provided',
+	// 	})
+	// }
+
+	// const token = authorization.replace('Bearer ', '')
 	const token = req.params.token
-	const { user_id, email } = tku.decodeToken(token)
+	const { user_id, email } = tku.decodeToken(token) // TODO catch error
 	pool.getConnection()
 		.then(async (conn) => {
 			const queryUser = `SELECT * FROM users WHERE id = '${user_id}'`
@@ -114,12 +122,14 @@ async function getUserByToken(req, res) {
 async function getUser(req, res) {
 	const email = req.params.email
 	const password = req.params.password
-
+	console.log('getUser')
 	pool.getConnection()
 		.then(async (conn) => {
+			console.log('connected')
 			const queryUser = `SELECT * FROM users WHERE email = '${email}'`
 
 			const user = await conn.query(queryUser)
+			console.log(user[0])
 
 			if (!user || (user && user.length == 0)) {
 				return res.status(403).json({ message: "Email doesn't exist" })
@@ -137,6 +147,8 @@ async function getUser(req, res) {
 			}
 
 			const user_info = extractUserInfo(user[0])
+
+			console.log(user_info)
 
 			res.status(201).send({
 				status: 'success',
