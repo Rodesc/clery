@@ -24,17 +24,16 @@ app.use(express.json())
 
 const port = process.env.port || 80
 
-// define a route handler for the default home page
-app.get('/status', (req, res) => {
-	console.log({ status: 'ok' })
-	res.status(200).send({ status: 'ok' })
-})
-
 app.get('/user/:email/:password', db.getUser)
 
 app.get('/user/:token', db.getUserByToken)
 
 app.post('/companyowner', encryptPassword, db.createCompanyOwner)
+
+app.get('/status', (req, res) => {
+	console.log({ status: 'ok' })
+	res.status(200).send({ status: 'ok' })
+})
 
 // start the Express server
 app.listen(port, () => {
