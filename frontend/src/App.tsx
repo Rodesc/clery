@@ -1,9 +1,10 @@
-// import { Route, Redirect, Switch, useHistory } from 'react-router'
 import Auth from './screens/Auth'
 import Upload from './screens/Upload'
 import Analysis from './screens/Analysis'
 import Header from './components/Header'
 import FlashMessages, { flashMessage } from './components/FlashMessages'
+
+import AuthService from './services/AuthService'
 
 import {
 	RouteComponentProps,
@@ -14,6 +15,7 @@ import {
 	useHistory,
 	useLocation,
 } from 'react-router-dom'
+
 import { useEffect, useState } from 'react'
 
 const App = () => {
@@ -24,14 +26,22 @@ const App = () => {
 
 	// check if logged in at each route
 	useEffect(() => {
+		console.log('history? ')
 		const token = localStorage.getItem('authToken')
 		if (token === null) {
-			console.log('Not connected')
 			setLoggedIn(false)
 		} else {
 			console.log('Check if correct token')
 			//TODO
-			setLoggedIn(true)
+			AuthService.isAuth(token)
+				.then((isAuth) => {
+					console.log('Correct?' + isAuth)
+					setLoggedIn(isAuth)
+				})
+				.catch((err) => {
+					console.log('false?' + err)
+					setLoggedIn(false)
+				})
 		}
 	}, [location])
 
