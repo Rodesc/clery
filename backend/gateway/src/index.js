@@ -3,17 +3,16 @@ const app = express()
 const tku = require('./utils/auth.middleware')
 
 // Add headers
-app.use(function (req, res, next) {
-	res.setHeader('Access-Control-Allow-Origin', '*')
-	res.setHeader(
+app.use((req, res, next) => {
+	res.header('Access-Control-Allow-Origin', '*')
+	res.header(
 		'Access-Control-Allow-Methods',
-		'GET, POST, OPTIONS, PUT, PATCH, DELETE'
+		'GET, PUT, POST, DELETE, OPTIONS'
 	)
-	res.setHeader(
+	res.header(
 		'Access-Control-Allow-Headers',
-		'X-Requested-With,content-type'
+		'Origin, X-Requested-With, Content-Type, Accept, Authorization'
 	)
-	res.setHeader('Access-Control-Allow-Credentials', true)
 	next()
 })
 
@@ -28,12 +27,14 @@ app.get('/auth', (req, res) => {
 
 	const authorization = req.header('Authorization')
 	if (!authorization) {
+		console.log('No bearer token provided')
 		return res.status(401).send({
 			message: 'No bearer token provided',
 		})
 	}
 
 	const token = authorization.replace('Bearer ', '')
+	console.log('token')
 
 	try {
 		const payload = tku.decodeToken(token)
