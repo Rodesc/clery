@@ -1,9 +1,9 @@
 version: '3'
 
-services: # list all services for your application
-    storage_viewer:
+services:
+    ########################## Users #############################
+    users-viewer:
         image: phpmyadmin/phpmyadmin
-        container_name: phpmyadmin
         environment: ['PMA_ARBITRARY=1', 'PMA_HOST=users-db']
         restart: always
         ports: ['8080:80']
@@ -19,8 +19,8 @@ services: # list all services for your application
             MYSQL_ROOT_PASSWORD: clerypassword
             MYSQL_DATABASE: clery-users
         volumes: [
-                './user-data:/var/lib/mysql', # database data storage on host
-                './db-config:/docker-entrypoint-initdb.d', # database init file
+                './tmp/user-data:/var/lib/mysql', # database data storage on host
+                './users/db-config:/docker-entrypoint-initdb.d', # database init file
             ]
 
     # users microservice
@@ -36,7 +36,47 @@ services: # list all services for your application
             DB_PASSWORD: clerypassword
             JWT_KEY: 1284f18a8a027173483a1cd563db5c51
 
-    # users microservice
+    ########################## Documents #############################
+    # documents microservice
+    documents-service:
+        image: rodesc/clery-documents:latest
+        depends_on: ['documents-db']
+        ports: ['3003:80']
+        restart: always
+        environment:
+            DB_HOST: documents-db
+            DB_NAME: documents
+            DB_PORT: 27017
+            DB_USER: root
+            DB_PASSWORD: clerypassword
+
+    file-viewer:
+        image: mongo-express
+        restart: always
+        ports: ['8081:8081']
+        depends_on: ['documents-db']
+        environment:
+            ME_CONFIG_MONGODB_ADMINUSERNAME: root
+            ME_CONFIG_MONGODB_ADMINPASSWORD: clerypassword
+            ME_CONFIG_MONGODB_SERVER: documents-db
+            ME_CONFIG_MONGODB_PORT: 27017
+
+    # file database
+    documents-db:
+        image: mongo:3
+        ports: ['27017:27017']
+        restart: always
+        volumes:
+            [
+                './tmp/documents-data:/data/db',
+                './documents/init-db.js:/docker-entrypoint-initdb.d/init-mongo.js',
+            ]
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: root
+            MONGO_INITDB_ROOT_PASSWORD: clerypassword
+            MONGO_INITDB_DATABASE: documents
+
+    # gateway microservice
     gateway-service:
         image: rodesc/clery-gateway:latest
         depends_on: ['users-service']
