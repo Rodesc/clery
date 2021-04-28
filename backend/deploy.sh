@@ -14,7 +14,13 @@ function clean {
   rm -r tmp
 }
 
+function cleanVolumes {
+  echo "WARNING: cleaning volumes"
+  docker volume ls | awk '$1 == "local" { print $2 }' | xargs --no-run-if-empty docker volume rm
+}
+
 function update {
+  clear
   cd $SERVICE/ || exit
   sh update.sh 
   cd ..
@@ -29,6 +35,7 @@ function updateAll {
     SERVICE=$val
     update
   done
+  clear
 }
 
 docker-compose down
@@ -59,6 +66,7 @@ case $key in
     # clean DB and update all services
     -d|--deep)
     clean
+    cleanVolumes
     updateAll
     shift
     ;;
