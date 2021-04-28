@@ -1,8 +1,7 @@
 const express = require('express')
 const app = express()
-const tku = require('./utils/auth.middleware')
+const tku = require('./utils/middleware')
 
-// Add headers
 app.use((req, res, next) => {
 	res.header('Access-Control-Allow-Origin', '*')
 	res.header(
@@ -22,31 +21,11 @@ app.use(express.json())
 const port = 80
 
 // authentication
-app.get('/auth', (req, res) => {
-	console.log('auth')
-
-	const authorization = req.header('Authorization')
-	if (!authorization) {
-		console.log('No bearer token provided')
-		return res.status(401).send({
-			message: 'No bearer token provided',
-		})
-	}
-
-	const token = authorization.replace('Bearer ', '')
-	console.log('token')
-
-	try {
-		const payload = tku.decodeToken(token)
-		return res.status(200).send({
-			payload: payload,
-			message: 'Valid token, you are authenticated',
-		})
-	} catch (err) {
-		return res.status(401).send({
-			message: 'Invalid token',
-		})
-	}
+app.get('/auth', tku.isAuthAttachPayload, (req, res) => {
+	res.status(200).send({
+		payload: payload,
+		message: 'Valid token, you are authenticated',
+	})
 })
 
 // users API gateway
@@ -63,6 +42,15 @@ app.get('/user/:token', (req, res) => {
 
 app.post('/companyowner', (req, res) => {
 	res.redirect(308, `http://${req.hostname}:3001/companyowner`)
+})
+
+// documents API gateway
+app.post('/file', tku.isAuthAttachPayload, (req, res) => {
+	res.redirect(308, `http://${req.hostname}:3003/file`)
+})
+
+app.get('/files', tku.isAuthAttachPayload, (req, res) => {
+	res.redirect(308, `http://${req.hostname}:3003/files`)
 })
 
 // start the Express server
