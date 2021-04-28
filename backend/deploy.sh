@@ -2,31 +2,74 @@
 
 echo "Deploying Back-End"
 
-if [ -z "$1" ]; then
-  STATUS="updateAndRun"
-  echo "Provide run, update or updateAndRun as argument"
-else
-  STATUS=$1
-fi
+declare -a Services=("users" "documents" "gateway" )
 
 # define directory of the script and cd to it
 dir=$(cd -P -- "$(dirname -- "$0")" && pwd -P) || exit
 cd "${dir%/}" || exit
 
+function clean {
+  # clean tmp folder
+  echo "Removing all data from databases"
+  rm -r tmp
+}
 
-if [ "$STATUS" = "update" ] || [ "$STATUS" = "updateAndRun" ]; then
+function update {
+  cd $SERVICE/ || exit
+  sh update.sh 
+  cd ..
+}
+
+function updateAll {
   echo ""
   echo "Updating all service images ..."
+  
+  # Read the array values with space
+  for val in "${Services[@]}"; do
+    SERVICE=$val
+    update
+  done
+}
 
-  # update users microservice
-  cd users/ || exit
-  sh update.sh "$STATUS"
-  cd ..
+docker-compose down
 
-  # update gateway microservice
-  cd gateway/ || exit
-  sh update.sh "$STATUS"
-  cd ..
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+key="$1"
 
-fi
+case $key in
+    # clean all databases 
+    -c|--clean) 
+    clean
+    shift
+    ;;
+    # update a single service
+    -s|--service) 
+    SERVICE="$2"
+    update
+    shift
+    shift
+    ;;
+    # update all services
+    -a|--all)
+    updateAll
+    shift
+    ;;
+    # clean DB and update all services
+    -d|--deep)
+    clean
+    updateAll
+    shift
+    ;;
+    *)    # unknown option
+    POSITIONAL+=("$1")
+    shift
+    ;;
+esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
 docker-compose up --remove-orphans
+
+
