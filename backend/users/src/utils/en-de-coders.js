@@ -1,12 +1,12 @@
 const moment = require('moment')
 const jwt = require('jsonwebtoken')
 
-function encodeToken(user_id, email, is_owner) {
+function encodeToken(user_id, company_id, is_owner) {
 	var payload = {
 		exp: moment().add(14, 'days').unix(),
 		iat: moment().unix(),
 		user_id: user_id,
-		email: email,
+		company_id: company_id,
 		is_owner: is_owner,
 	}
 

@@ -47,14 +47,17 @@ const createCompanyOwner = async (req, res, next) => {
 		pool.getConnection()
 			.then(async (conn) => {
 				const company_query = `INSERT INTO companies VALUES (0,'${company_name}');`
-				await conn.query(company_query)
+
+				const new_company = await conn.query(company_query)
+
+				const company_id = new_company.insertId
 
 				const user_query = `INSERT INTO users VALUES (0,
 										'${first_name}', 
 										'${last_name}', 
 										'${email}', 
 										'${password}', 
-										LAST_INSERT_ID(), 
+										'${company_id}', 
 										TRUE, 
 										CURDATE());`
 				const new_user = await conn.query(user_query)
@@ -71,7 +74,7 @@ const createCompanyOwner = async (req, res, next) => {
 
 				res.status(201).send({
 					status: 'success',
-					token: tku.encodeToken(user_id[0], email, true),
+					token: tku.encodeToken(user_id[0], company_id[0], true),
 					user: user,
 				})
 			})
@@ -109,7 +112,11 @@ async function getUserByToken(req, res) {
 
 			res.status(201).send({
 				status: 'success',
-				token: tku.encodeToken(user[0].id, email, user[0].is_owner),
+				token: tku.encodeToken(
+					user[0].id,
+					user[0].company_id,
+					user[0].is_owner
+				),
 				user: user_info,
 			})
 		})
@@ -152,7 +159,11 @@ async function getUser(req, res) {
 
 			res.status(201).send({
 				status: 'success',
-				token: tku.encodeToken(user[0].id, email, user[0].is_owner),
+				token: tku.encodeToken(
+					user[0].id,
+					user[0].company_id,
+					user[0].is_owner
+				),
 				user: user_info,
 			})
 		})
