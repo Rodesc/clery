@@ -1,5 +1,5 @@
 const express = require('express')
-const upload = require('./utils/middleware')
+const { upload, getFiles } = require('./utils/middleware')
 const app = express()
 
 app.use(express.urlencoded()) // parse application/json
@@ -13,21 +13,22 @@ app.get('/status', (req, res) => {
 	res.status(200).send({ status: 'ok' })
 })
 
-app.post('/file', async (req, res) => {
+app.post('/file', upload.single('file'), async (req, res) => {
 	try {
-		await upload(req, res)
-
-		console.log(req.file)
-		if (req.file == undefined) {
-			return res.send(`You must select a file.`)
-		}
-
-		return res.send(`File has been uploaded.`)
-	} catch (error) {
-		console.log(error)
-		return res.send(`Error when trying upload image: ${error}`)
+		return res.status(201).send({
+			title: 'Uploaded',
+			message: `File ${req.file.filename} has been uploaded!`,
+		})
+	} catch (err) {
+		return res.status(500).send({
+			title: 'Uploaded Error',
+			message: 'File could not be uploaded',
+			error: err,
+		})
 	}
 })
+
+app.get('/files', getFiles)
 
 // start the Express server
 app.listen(port, () => {
