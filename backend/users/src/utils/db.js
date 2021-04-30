@@ -11,29 +11,7 @@ const pool = mariadb.createPool({
 	database: process.env.DB_NAME,
 })
 
-function createCompanyEmployee(user) {
-	console.log('createCompanyEmployee')
-
-	pool.getConnection()
-		.then((conn) => {
-			const SQLQuery = `INSERT INTO users(prenom, nom, email, date_inscription, user_type) VALUES ('rod', 'olphe', 'rodolphe.deschaetzen@student.uclouvain.be', CURDATE(), 0);`
-			conn.query(SQLQuery)
-				.then((res) => {
-					console.log('success')
-					console.log(res)
-					conn.end()
-				})
-				.catch((err) => {
-					//handle error
-					console.log(err)
-					conn.end()
-				})
-		})
-		.catch((err) => {
-			console.log('not connected')
-			console.log(err)
-		})
-}
+function createCompanyEmployee(user) {}
 
 const createCompanyOwner = async (req, res, next) => {
 	try {
@@ -74,7 +52,7 @@ const createCompanyOwner = async (req, res, next) => {
 
 				res.status(201).send({
 					status: 'success',
-					token: tku.encodeToken(user_id[0], company_id[0], true),
+					token: tku.encodeToken(user_id, company_id, true),
 					user: user,
 				})
 			})
