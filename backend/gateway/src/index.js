@@ -46,11 +46,15 @@ app.post('/companyowner', (req, res) => {
 
 // documents API gateway
 app.post('/file', tku.isAuthAttachPayload, (req, res) => {
-	res.redirect(308, `http://${req.hostname}:3003/file`)
+	res.redirect(308, `http://${req.hostname}:3003/file/${req.user_id}`)
 })
 
 app.get('/files', tku.isAuthAttachPayload, (req, res) => {
-	res.redirect(308, `http://${req.hostname}:3003/files`)
+	res.redirect(308, `http://${req.hostname}:3003/files/${req.user_id}`)
+})
+
+app.get('/file/:id', tku.isAuthAttachPayload, (req, res) => {
+	res.redirect(308, `http://${req.hostname}:3003/file/${req.params.id}`)
 })
 
 // start the Express server

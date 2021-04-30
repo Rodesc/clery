@@ -1,7 +1,6 @@
 // const moment = require('moment')
 const jwt = require('jsonwebtoken')
 
-// function encodeToken(user_id, email, is_owner) {
 // 	var payload = {
 // 		exp: moment().add(14, 'days').unix(),
 // 		iat: moment().unix(),
@@ -9,9 +8,6 @@ const jwt = require('jsonwebtoken')
 // 		email: email,
 // 		is_owner: is_owner,
 // 	}
-
-// 	return jwt.sign(payload, process.env.JWT_KEY)
-// }
 
 function decodeToken(token) {
 	return jwt.verify(token, process.env.JWT_KEY)
@@ -31,9 +27,11 @@ const isAuthAttachPayload = async (req, res, next) => {
 
 	try {
 		const payload = decodeToken(token)
+
 		req.user_id = payload.user_id
 		req.company_id = payload.company_id
 		req.is_owner = payload.is_owner
+
 		next()
 	} catch (err) {
 		return res.status(401).send({
