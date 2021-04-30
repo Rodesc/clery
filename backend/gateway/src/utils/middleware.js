@@ -28,9 +28,10 @@ const isAuthAttachPayload = async (req, res, next) => {
 	try {
 		const payload = decodeToken(token)
 
-		req.user_id = payload.user_id
-		req.company_id = payload.company_id
-		req.is_owner = payload.is_owner
+		req.payload = payload
+		// req.user_id = payload.user_id
+		// req.company_id = payload.company_id
+		// req.is_owner = payload.is_owner
 
 		next()
 	} catch (err) {

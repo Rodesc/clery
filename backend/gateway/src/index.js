@@ -23,7 +23,7 @@ const port = 80
 // authentication
 app.get('/auth', tku.isAuthAttachPayload, (req, res) => {
 	res.status(200).send({
-		payload: payload,
+		payload: req.payload,
 		message: 'Valid token, you are authenticated',
 	})
 })
@@ -46,11 +46,14 @@ app.post('/companyowner', (req, res) => {
 
 // documents API gateway
 app.post('/file', tku.isAuthAttachPayload, (req, res) => {
-	res.redirect(308, `http://${req.hostname}:3003/file/${req.user_id}`)
+	res.redirect(308, `http://${req.hostname}:3003/file/${req.payload.user_id}`)
 })
 
 app.get('/files', tku.isAuthAttachPayload, (req, res) => {
-	res.redirect(308, `http://${req.hostname}:3003/files/${req.user_id}`)
+	res.redirect(
+		308,
+		`http://${req.hostname}:3003/files/${req.payload.user_id}`
+	)
 })
 
 app.get('/file/:id', tku.isAuthAttachPayload, (req, res) => {
