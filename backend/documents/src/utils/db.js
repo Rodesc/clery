@@ -23,9 +23,10 @@ let storage = new GridFsStorage({
 	},
 	file: (req, file) => {
 		console.log(file.originalname)
-		const match = ['image/png', 'image/jpeg']
+		const match = ['application/pdf', 'image/jpeg']
 
 		if (match.indexOf(file.mimetype) === -1) {
+			console.log('Unsupported filetype:' + file.mimetype)
 			const filename = `${Date.now()}-${file.originalname}`
 			return filename
 		}
