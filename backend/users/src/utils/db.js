@@ -49,7 +49,7 @@ const createCompanyOwner = async (req, res, next) => {
 					email,
 					is_owner: 1,
 				}
-
+				console.log('Success')
 				res.status(201).send({
 					status: 'success',
 					token: tku.encodeToken(user_id, company_id, true),
@@ -58,6 +58,8 @@ const createCompanyOwner = async (req, res, next) => {
 			})
 			.catch((err) => {
 				const msg = 'Error while communicating with database'
+
+				console.log('Error while communicating with database')
 				return res.status(500).json({ message: msg, error: err })
 			})
 	} catch (err) {
@@ -88,6 +90,7 @@ async function getUserByToken(req, res) {
 
 			const user_info = extractUserInfo(user[0])
 
+			console.log('Success')
 			res.status(201).send({
 				status: 'success',
 				token: tku.encodeToken(
@@ -135,6 +138,7 @@ async function getUser(req, res) {
 
 			console.log(user_info)
 
+			console.log('Success')
 			res.status(201).send({
 				status: 'success',
 				token: tku.encodeToken(
