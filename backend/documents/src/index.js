@@ -2,8 +2,25 @@ const express = require('express')
 const { upload, getFiles, getFileById } = require('./utils/db')
 const app = express()
 
-app.use(express.urlencoded()) // parse application/json
+app.use(function (req, res, next) {
+	res.setHeader('Access-Control-Allow-Origin', '*') // to enable calls from every domain
+	res.setHeader(
+		'Access-Control-Allow-Methods',
+		'OPTIONS, GET, POST, PUT, PATCH, DELETE'
+	) // allowed actiosn
+	res.setHeader(
+		'Access-Control-Allow-Headers',
+		'Content-Type, Authorization,X-Requested-With'
+	)
+	res.setHeader('Access-Control-Allow-Credentials', true)
+
+	if (req.method === 'OPTIONS') {
+		return res.sendStatus(200) // to deal with chrome sending an extra options request
+	}
+	next()
+})
 app.use(express.json())
+app.use(express.urlencoded({ extended: false })) // parse application/json
 
 const port = process.env.port || 80
 
