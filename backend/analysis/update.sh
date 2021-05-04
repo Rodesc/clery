@@ -1,10 +1,10 @@
 #!/bin/sh
 
-echo "clery-boiler: docker image updating"
+echo "clery-analysis: docker image updating"
 
 USERNAME=rodesc
 
-docker build -t clery-boiler .
+docker build -t clery-analysis .
 
-docker tag clery-boiler "$USERNAME"/clery-boiler
-docker push "$USERNAME"/clery-boiler
+docker tag clery-analysis "$USERNAME"/clery-analysis
+docker push "$USERNAME"/clery-analysis
