@@ -23,14 +23,12 @@ const FlashMessages = ({
 
 type alertComponent = {
 	message: flashMessage
-	deleteFlashMessage: MouseEventHandler<HTMLButtonElement>
+	deleteFlashMessage: MouseEventHandler<HTMLImageElement>
 }
 const Alert = ({ message, deleteFlashMessage }: alertComponent) => {
 	return (
 		<div style={alertStyle} role="alert">
-			<button className="close" onClick={deleteFlashMessage}>
-				&times;
-			</button>
+			<img src="img/trashbin.svg" onClick={deleteFlashMessage} />
 			{message.text}
 		</div>
 	)

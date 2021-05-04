@@ -26,20 +26,15 @@ const App = () => {
 
 	// check if logged in at each route
 	useEffect(() => {
-		console.log('history? ')
 		const token = localStorage.getItem('authToken')
 		if (token === null) {
 			setLoggedIn(false)
 		} else {
-			console.log('Check if correct token')
-			//TODO
 			AuthService.isAuth(token)
 				.then((isAuth) => {
-					console.log('Correct?' + isAuth)
 					setLoggedIn(isAuth)
 				})
 				.catch((err) => {
-					console.log('false?' + err)
 					setLoggedIn(false)
 				})
 		}
@@ -73,11 +68,7 @@ const App = () => {
 				/>
 				<Switch>
 					{/* <Route path="/">
-						{loggedIn ? (
-							<Redirect to="/upload" />
-						) : (
-							<Redirect to="/login" />
-						)}
+						{loggedIn ? <Redirect to="/upload" /> : <></>}
 					</Route> */}
 
 					<Route path="/register">
