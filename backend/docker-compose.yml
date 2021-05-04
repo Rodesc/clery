@@ -1,19 +1,29 @@
 version: '3'
 
 services:
-    ########################## Users #############################
-    users-viewer:
-        image: phpmyadmin/phpmyadmin
-        environment: ['PMA_ARBITRARY=1', 'PMA_HOST=users-db']
+    # gateway microservice
+    gateway:
+        image: rodesc/clery-gateway:latest
+        ports: ['3000:80']
         restart: always
-        ports: ['8080:80']
-        volumes: ['/sessions']
-        depends_on: ['users-db']
+        networks: ['clery-net']
+        environment:
+            JWT_KEY: 1284f18a8a027173483a1cd563db5c51
+
+    ########################## Users #############################
+    # users-viewer:
+    #     image: phpmyadmin/phpmyadmin
+    #     environment: ['PMA_ARBITRARY=1', 'PMA_HOST=users-db']
+    #     restart: always
+    #     ports: ['8080:80']
+    #     volumes: ['/sessions']
+    #     depends_on: ['users-db']
 
     # database of users
     users-db:
         image: mariadb
         restart: always
+        networks: ['clery-net']
         ports: ['3002:5984']
         environment:
             MYSQL_ROOT_PASSWORD: clerypassword
@@ -24,11 +34,12 @@ services:
             ]
 
     # users microservice
-    users-service:
+    users:
         image: rodesc/clery-users:latest
         depends_on: ['users-db']
         ports: ['3001:80']
         restart: always
+        networks: ['clery-net']
         environment:
             DB_HOST: users-db
             DB_NAME: clery-users
@@ -38,11 +49,12 @@ services:
 
     ########################## Documents #############################
     # documents microservice
-    documents-service:
+    documents:
         image: rodesc/clery-documents:latest
         depends_on: ['documents-db']
         ports: ['3003:80']
         restart: always
+        networks: ['clery-net']
         environment:
             DB_HOST: documents-db
             DB_NAME: documents
@@ -50,16 +62,16 @@ services:
             DB_USER: root
             DB_PASSWORD: clerypassword
 
-    file-viewer:
-        image: mongo-express
-        restart: always
-        ports: ['8081:8081']
-        depends_on: ['documents-db']
-        environment:
-            ME_CONFIG_MONGODB_ADMINUSERNAME: root
-            ME_CONFIG_MONGODB_ADMINPASSWORD: clerypassword
-            ME_CONFIG_MONGODB_SERVER: documents-db
-            ME_CONFIG_MONGODB_PORT: 27017
+    # file-viewer:
+    #     image: mongo-express
+    #     restart: always
+    #     ports: ['8081:8081']
+    #     depends_on: ['documents-db']
+    #     environment:
+    #         ME_CONFIG_MONGODB_ADMINUSERNAME: root
+    #         ME_CONFIG_MONGODB_ADMINPASSWORD: clerypassword
+    #         ME_CONFIG_MONGODB_SERVER: documents-db
+    #         ME_CONFIG_MONGODB_PORT: 27017
 
     # file database
     documents-db:
@@ -71,20 +83,24 @@ services:
                 './tmp/documents-data:/data/db',
                 './documents/init-db.js:/docker-entrypoint-initdb.d/init-mongo.js',
             ]
+        networks: ['clery-net']
         environment:
             MONGO_INITDB_ROOT_USERNAME: root
             MONGO_INITDB_ROOT_PASSWORD: clerypassword
             MONGO_INITDB_DATABASE: documents
 
-    # gateway microservice
-    gateway-service:
-        image: rodesc/clery-gateway:latest
-        depends_on: ['users-service']
-        ports: ['3000:80']
+    ########################## Analysis #############################
+    # analysis microservice
+    analysis:
+        image: rodesc/clery-analysis:latest
+        # depends_on: ['gateway']
+        ports: ['3004:80']
         restart: always
+        networks: ['clery-net']
         environment:
-            JWT_KEY: 1284f18a8a027173483a1cd563db5c51
+            OPENAI_API_KEY: sk-JpNsZ5FwvdlYP4QvkTP4ujR1d8F3izWH1J7Kl985
+            DEEPL_API_KEY: cdc2313d-b0ae-b48e-4e2b-143fb7ad258e:fx
 
 networks:
-    scapp-net:
+    clery-net:
         external: true

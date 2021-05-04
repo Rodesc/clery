@@ -2,7 +2,7 @@
 
 echo "Deploying Back-End"
 
-declare -a Services=("users" "documents" "gateway" )
+declare -a Services=("users" "documents" "gateway" "analysis")
 
 # define directory of the script and cd to it
 dir=$(cd -P -- "$(dirname -- "$0")" && pwd -P) || exit
@@ -20,7 +20,6 @@ function cleanVolumes {
 }
 
 function update {
-  clear
   cd $SERVICE/ || exit
   sh update.sh 
   cd ..
@@ -35,7 +34,6 @@ function updateAll {
     SERVICE=$val
     update
   done
-  clear
 }
 
 docker-compose down
@@ -78,6 +76,7 @@ esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
+docker network create clery-net
 docker-compose up --remove-orphans
 
 
