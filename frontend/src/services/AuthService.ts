@@ -6,9 +6,7 @@ const isAuth = async (token: string) => {
 	const config = {
 		headers: { Authorization: `Bearer ${token.replace(/['"]+/g, '')}` },
 	}
-	console.log(config)
 	const response = await axios.get(url + '/auth', config)
-	console.log('response')
 	if (response === null) {
 		return false
 	}
