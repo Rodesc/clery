@@ -60,6 +60,11 @@ app.get('/file/:id', tku.isAuthAttachPayload, (req, res) => {
 	res.redirect(308, `http://${req.hostname}:3003/file/${req.params.id}`)
 })
 
+// analysis API gateway
+app.post('/analysis', tku.isAuthAttachPayload, (req, res) => {
+	res.redirect(308, `http://${req.hostname}:3004/analysis`)
+})
+
 // start the Express server
 app.listen(port, () => {
 	console.log(`Listening for requests (internal port ${port})`)
