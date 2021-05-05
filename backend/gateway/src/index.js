@@ -60,6 +60,10 @@ app.get('/file/:id', tku.isAuthAttachPayload, (req, res) => {
 	res.redirect(308, `http://${req.hostname}:3003/file/${req.params.id}`)
 })
 
+app.delete('/file/:id', tku.isAuthAttachPayload, (req, res) => {
+	res.redirect(308, `http://${req.hostname}:3003/file/${req.params.id}`)
+})
+
 // analysis API gateway
 app.post('/analysis', tku.isAuthAttachPayload, (req, res) => {
 	res.redirect(308, `http://${req.hostname}:3004/analysis`)

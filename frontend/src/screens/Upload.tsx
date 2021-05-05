@@ -35,26 +35,38 @@ const Upload = ({ createFlashMessage }: UploadProps) => {
 	}
 
 	function displayDocs() {
-		const documentElements = docs?.map((doc: Doc, index: number) => {
-			const filetype = doc.metadata.originalname.split('.').pop()
-			return (
-				<FileElem
-					key={doc._id}
-					file_id={doc._id}
-					type={filetype}
-					filename={doc.metadata.originalname}
-					fileSize={doc.chunkSize.toString()}
-					date={doc.uploadDate}
-					deleteFile={deleteFile}
-				/>
-			)
-		})
+		const documentElements = docs
+			?.slice(0)
+			.reverse()
+			.map((doc: Doc) => {
+				const filetype = doc.metadata.originalname.split('.').pop()
+				return (
+					<FileElem
+						key={doc._id}
+						file_id={doc._id}
+						type={filetype}
+						filename={doc.metadata.originalname}
+						fileSize={doc.chunkSize.toString()}
+						date={doc.uploadDate}
+						deleteFile={deleteFile}
+					/>
+				)
+			})
 		return <>{documentElements}</>
 	}
 
 	async function deleteFile(id: string) {
-		// TODO await DocService.deleteFile(id)
-		createFlashMessage('File deleted', 'success')
+		const isDel = await DocService.deleteDoc(id)
+
+		if (isDel) {
+			console.log('Problème lors de la suppression du fichier')
+			createFlashMessage(
+				'Problème lors de la suppression du fichier',
+				'success'
+			)
+			return
+		}
+		createFlashMessage('Document supprimé', 'success')
 		setDocs(docs?.filter((e: Doc) => e._id !== id))
 	}
 
@@ -62,7 +74,7 @@ const Upload = ({ createFlashMessage }: UploadProps) => {
 		try {
 			setLoading(true)
 
-			await DocService.uploadDoc(file).catch((err) => {
+			DocService.uploadDoc(file).catch((err) => {
 				createFlashMessage("File wasn't saved in the DB", 'warning')
 				console.log(err)
 			})
@@ -175,6 +187,7 @@ const FileElem = (props: {
 	fileSize: string
 	deleteFile: Function
 }) => {
+	const date = new Date(props.date)
 	async function downloadFile() {
 		await DocService.download(props.file_id).then((dataURI) => {
 			const win = window.open()
@@ -192,12 +205,29 @@ const FileElem = (props: {
 				<p>{props.type}</p>{' '}
 			</div>
 			<span className="fileName">{props.filename}</span>
-			<span className="nbRefs">{props.date}</span>
-			<Button value="Télécharger" action={downloadFile} />
+			<span className="nbRefs">
+				{`
+				${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}
+				${date.getHours()}h${date.getMinutes()}
+				`}
+			</span>
+			<img
+				src="img/download.svg"
+				onClick={() => downloadFile()}
+				style={{
+					padding: '36px 16px 36px 16px',
+					height: '24px',
+					cursor: 'pointer',
+				}}
+			/>
 			<img
 				src="img/trashbin.svg"
 				onClick={() => props.deleteFile(props.file_id)}
-				style={{ padding: '32px 32px 32px 23px', height: '32px' }}
+				style={{
+					padding: '32px 24px 32px 16px',
+					height: '32px',
+					cursor: 'pointer',
+				}}
 			/>
 		</div>
 	)

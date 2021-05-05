@@ -60,8 +60,28 @@ const download = async (id: string) => {
 	return response.data.imgurl
 }
 
+const deleteDoc = async (id: string) => {
+	console.log('Uploading document')
+	const token = localStorage.getItem('authToken') || ''
+
+	const config = {
+		headers: { Authorization: `Bearer ${token.replace(/['"]+/g, '')}` },
+	}
+
+	const response = await axios.delete(url + '/file', config).catch((err) => {
+		return false
+	})
+	if (response === null) {
+		return false
+	}
+	console.log(response)
+
+	return true
+}
+
 export default {
 	getDocs,
 	uploadDoc,
 	download,
+	deleteDoc,
 }

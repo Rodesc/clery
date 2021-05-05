@@ -65,6 +65,54 @@ const getFiles = (req, res) => {
 		res.status(201).send(fileList)
 	})
 }
+const deleteFileById = (req, res) => {
+	console.log('deleteFileById')
+	//Connect to the MongoDB client
+	try {
+		MongoClient.connect(mongoURI, (err, client) => {
+			if (err) {
+				res.status(500).send({
+					error: 'MongoClient Connection error',
+					message: err.errMsg,
+				})
+			}
+			console.log('deleteFileById: connected to DB')
+
+			const db = client.db(dbName)
+
+			const collection = db.collection('docs.files')
+			const collectionChunks = db.collection('docs.chunks')
+
+			const doc_id = new ObjectId(req.params.id)
+			console.log('deleteFileById: doc_id' + doc_id.toString())
+
+			collection.deleteOne({ _id: doc_id }).catch((err) => {
+				res.status(500).send({
+					error: "Couldn't find file to delete: " + doc_id.toString(),
+					message: err.errMsg,
+				})
+			})
+
+			collectionChunks.deleteMany({ files_id: doc_id }).catch((err) => {
+				res.status(500).send({
+					error:
+						"Couldn't find chunks to delete of file " +
+						doc_id.toString(),
+					message: err.errMsg,
+				})
+			})
+
+			res.status(200).send({
+				message: 'Deleted file successfully ',
+			})
+		})
+	} catch (err) {
+		res.status(500).send({
+			error: 'Error deleting file',
+			message: err.errMsg,
+		})
+	}
+}
 
 const getFileById = (req, res) => {
 	//Connect to the MongoDB client
@@ -136,4 +184,4 @@ const getFileById = (req, res) => {
 	})
 }
 
-module.exports = { upload, getFiles, getFileById }
+module.exports = { upload, getFiles, getFileById, deleteFileById }

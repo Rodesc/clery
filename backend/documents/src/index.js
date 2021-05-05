@@ -1,5 +1,5 @@
 const express = require('express')
-const { upload, getFiles, getFileById } = require('./utils/db')
+const { upload, getFiles, getFileById, deleteFileById } = require('./utils/db')
 const app = express()
 
 app.use(function (req, res, next) {
@@ -46,6 +46,8 @@ app.post('/file/:uid', upload.single('file'), async (req, res) => {
 app.get('/files/:uid', getFiles)
 
 app.get('/file/:id', getFileById)
+
+app.delete('/file/:id', deleteFileById)
 
 // start the Express server
 app.listen(port, () => {

@@ -28,7 +28,11 @@ type alertComponent = {
 const Alert = ({ message, deleteFlashMessage }: alertComponent) => {
 	return (
 		<div style={alertStyle} role="alert">
-			<img src="img/trashbin.svg" onClick={deleteFlashMessage} />
+			<img
+				src="img/trashbin.svg"
+				onClick={deleteFlashMessage}
+				style={{ position: 'absolute', right: '8px' }}
+			/>
 			{message.text}
 		</div>
 	)
@@ -38,7 +42,7 @@ const alertStyle: CSSProperties = {
 	margin: '8px auto',
 	padding: '16px',
 
-	backgroundColor: '#2F3142',
+	backgroundColor: '#656880',
 	boxShadow: '0px 0px 10px 0px #212330',
 
 	borderRadius: '8px',

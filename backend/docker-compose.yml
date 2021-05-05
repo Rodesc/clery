@@ -6,7 +6,6 @@ services:
         image: rodesc/clery-gateway:latest
         ports: ['3000:80']
         restart: always
-        networks: ['clery-net']
         environment:
             JWT_KEY: 1284f18a8a027173483a1cd563db5c51
 
@@ -23,7 +22,6 @@ services:
     users-db:
         image: mariadb
         restart: always
-        networks: ['clery-net']
         ports: ['3002:5984']
         environment:
             MYSQL_ROOT_PASSWORD: clerypassword
@@ -39,7 +37,6 @@ services:
         depends_on: ['users-db']
         ports: ['3001:80']
         restart: always
-        networks: ['clery-net']
         environment:
             DB_HOST: users-db
             DB_NAME: clery-users
@@ -54,7 +51,6 @@ services:
         depends_on: ['documents-db']
         ports: ['3003:80']
         restart: always
-        networks: ['clery-net']
         environment:
             DB_HOST: documents-db
             DB_NAME: documents
@@ -83,7 +79,6 @@ services:
                 './tmp/documents-data:/data/db',
                 './documents/init-db.js:/docker-entrypoint-initdb.d/init-mongo.js',
             ]
-        networks: ['clery-net']
         environment:
             MONGO_INITDB_ROOT_USERNAME: root
             MONGO_INITDB_ROOT_PASSWORD: clerypassword
@@ -96,11 +91,6 @@ services:
         # depends_on: ['gateway']
         ports: ['3004:80']
         restart: always
-        networks: ['clery-net']
         environment:
             OPENAI_API_KEY: sk-JpNsZ5FwvdlYP4QvkTP4ujR1d8F3izWH1J7Kl985
             DEEPL_API_KEY: cdc2313d-b0ae-b48e-4e2b-143fb7ad258e:fx
-
-networks:
-    clery-net:
-        external: true
