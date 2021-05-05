@@ -1,6 +1,7 @@
 import './Upload.css'
 import { ChangeEvent, MouseEvent, useEffect, useState } from 'react'
 import { Button } from '../components/Button'
+import Loader from '../components/Loader'
 import { useHistory } from 'react-router-dom'
 import DocService from '../services/DocService'
 import AnalysisService from '../services/AnalysisService'
@@ -131,7 +132,7 @@ const Upload = ({ createFlashMessage }: UploadProps) => {
 						</div>
 						{file ? (
 							loading ? (
-								<>loading</>
+								<Loader />
 							) : (
 								<Button
 									value="Analyser"
