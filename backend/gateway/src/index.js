@@ -18,7 +18,7 @@ app.use((req, res, next) => {
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
-const port = 80
+const port = process.env.PORT || 80
 
 // authentication
 app.get('/auth', tku.isAuthAttachPayload, (req, res) => {

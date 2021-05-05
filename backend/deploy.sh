@@ -3,6 +3,7 @@
 echo "Deploying Back-End"
 
 declare -a Services=("users" "documents" "gateway" "analysis")
+context_name=clery_aci
 
 # define directory of the script and cd to it
 dir=$(cd -P -- "$(dirname -- "$0")" && pwd -P) || exit
@@ -36,8 +37,6 @@ function updateAll {
   done
 }
 
-docker-compose down
-
 POSITIONAL=()
 while [[ $# -gt 0 ]]
 do
@@ -63,9 +62,14 @@ case $key in
     ;;
     # clean DB and update all services
     -d|--deep)
+    docker-compose down
     clean
     cleanVolumes
     updateAll
+    shift
+    ;;
+    -o|--online) 
+    echo ONLINE=true
     shift
     ;;
     *)    # unknown option
@@ -76,7 +80,9 @@ esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-docker network create clery-net
 docker-compose up --remove-orphans
+
+
+
 
 

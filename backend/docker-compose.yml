@@ -1,6 +1,12 @@
 version: '3'
 
 services:
+    frontend:
+        image: rodesc/clery-frontend:latest
+        ports: ['80:3000']
+        environment:
+            GATEWAY_URL: http://clery-backend.francecentral.cloudapp.azure.com:3000
+
     # gateway microservice
     gateway:
         image: rodesc/clery-gateway:latest
@@ -10,13 +16,13 @@ services:
             JWT_KEY: 1284f18a8a027173483a1cd563db5c51
 
     ########################## Users #############################
-    # users-viewer:
-    #     image: phpmyadmin/phpmyadmin
-    #     environment: ['PMA_ARBITRARY=1', 'PMA_HOST=users-db']
-    #     restart: always
-    #     ports: ['8080:80']
-    #     volumes: ['/sessions']
-    #     depends_on: ['users-db']
+    users-viewer:
+        image: phpmyadmin/phpmyadmin
+        environment: ['PMA_ARBITRARY=1', 'PMA_HOST=users-db']
+        restart: always
+        ports: ['8080:80']
+        volumes: ['/sessions']
+        depends_on: ['users-db']
 
     # database of users
     users-db:
@@ -58,16 +64,16 @@ services:
             DB_USER: root
             DB_PASSWORD: clerypassword
 
-    # file-viewer:
-    #     image: mongo-express
-    #     restart: always
-    #     ports: ['8081:8081']
-    #     depends_on: ['documents-db']
-    #     environment:
-    #         ME_CONFIG_MONGODB_ADMINUSERNAME: root
-    #         ME_CONFIG_MONGODB_ADMINPASSWORD: clerypassword
-    #         ME_CONFIG_MONGODB_SERVER: documents-db
-    #         ME_CONFIG_MONGODB_PORT: 27017
+    file-viewer:
+        image: mongo-express
+        restart: always
+        ports: ['8081:8081']
+        depends_on: ['documents-db']
+        environment:
+            ME_CONFIG_MONGODB_ADMINUSERNAME: root
+            ME_CONFIG_MONGODB_ADMINPASSWORD: clerypassword
+            ME_CONFIG_MONGODB_SERVER: documents-db
+            ME_CONFIG_MONGODB_PORT: 27017
 
     # file database
     documents-db:
