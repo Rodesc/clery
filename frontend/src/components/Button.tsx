@@ -44,6 +44,7 @@ type buttonProps = {
 
 const baseBtnStyle: CSSProperties = {
 	margin: 'auto 0',
+	cursor: 'pointer',
 
 	/*shape*/
 	width: '128px',
