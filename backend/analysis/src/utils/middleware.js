@@ -55,86 +55,113 @@ const extractText = async (req, res, next) => {
 					message: error,
 				})
 			}
-
 			req.resAnalysis.fileContent = fileContent
-			// console.log(req.resAnalysis)
 			next()
 		}
 	)
 }
-// const translate = require('deepl')
+
 const DEEPL_API_KEY = process.env.DEEPL_API_KEY
 
 const axios = require('axios')
 const querystring = require('querystring')
 
 const translateToEn = async (sentence) => {
-	async function translate(parameters) {
+	function translate(parameters) {
 		return axios.post(
 			`https://api-free.deepl.com/v2/translate`,
 			querystring.stringify(parameters)
 		)
 	}
 
-	translate({
-		auth_key: DEEPL_API_KEY,
-		text: sentence,
-		target_lang: 'EN',
-		split_sentences: '0',
-		preserve_formatting: '1',
-	})
-		.then((result) => {
-			console.log(result.data)
-			return result.data.translations[0].text
+	try {
+		const result = await translate({
+			auth_key: DEEPL_API_KEY,
+			text: sentence,
+			target_lang: 'EN',
+			split_sentences: '0',
+			preserve_formatting: '1',
 		})
-		.catch((error) => {
-			console.error(error)
-		})
+		return result.data.translations[0].text
+	} catch (err) {
+		console.error(error)
+	}
 }
 
-const OpenAI = require('openai-api')
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY
-const openai = new OpenAI(OPENAI_API_KEY)
 
 const matchWithKeywords = async (sentenceEN) => {
-	const gptResponse = await openai.search({
-		engine: 'davinci',
-		documents: ['Maison Blanche', 'hopital', 'école'],
-		query: sentenceEN,
-	})
-	console.log(gptResponse.data)
-	return gptResponse.data
+	try {
+		const data = {
+			file: 'file-jj9YN7GJs6xF8ay9ERmsFy3g', // small: file-fd3kYLtD6dynAzM0vwM2VLaw
+			query: sentenceEN,
+			return_metadata: true,
+		}
+
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${OPENAI_API_KEY}`,
+			},
+		}
+
+		const gptResponse = await axios.post(
+			'https://api.openai.com/v1/engines/babbage/search',
+			data,
+			config
+		)
+		return gptResponse.data.data
+	} catch (err) {
+		console.log(err.response)
+		console.log('error retrieving data')
+		return {}
+	}
 }
 
 const findKeywords = async (req, res, next) => {
-	console.log('findKeywords')
 	const text = req.resAnalysis.fileContent
-	var exp = /["']?[A-Z][^.?!]+((?![.?!]['"]?\\s["']?[A-Z][^.?!]).)+[.?!'"]+/
-	var rx = /[^\.!\?]+[\.!\?]+/g
-	var sentences = text.match(rx)
+
+	const exp = /["']?[A-Z][^.?!]+((?![.?!]['"]?\\s["']?[A-Z][^.?!]).)+[.?!'"]+/
+	const rx = /[^\.!\?]+[\.!\?]+/g
+	const sentences = text.match(rx)
+
 	let sentenceObjectList = []
-	await sentences.forEach(async (s) => {
-		console.log(s)
-		// translate to english
-		// match sentence with pre established keywords GPT3
-		// get match keyword
-		let translation = await translateToEn(s)
-		let keywordList = await matchWithKeywords(s)
+
+	for (var i = 0; i < sentences.length; i++) {
+		const translation = await translateToEn(sentences[i])
+
+		let keywordList = await matchWithKeywords(translation)
+
+		// sort and clean each object of keywordList
+		keywordList.sort((a, b) => parseFloat(b.score) - parseFloat(a.score))
+
+		keywordList = keywordList
+			.filter((obj) => {
+				return obj.score >= 80
+			})
+			.map((obj) => {
+				let newObj = {}
+				newObj.keyword = obj.metadata.original
+				newObj.keywordEN = obj.text
+				newObj.language = obj.metadata.source_lang
+				newObj.score = obj.score
+				return newObj
+			})
 
 		sentenceObjectList.push({
-			sentence: s,
+			sentence: sentences[i],
 			keywords: keywordList,
-			translation: translation,
 		})
-	})
+	}
+
 	req.resAnalysis.sentences = sentenceObjectList
-	console.log('Sentences :' + sentences.length.toString())
 
 	next()
 }
 
 const findRefs = async (req, res, next) => {
 	console.log('findRefs')
+	// find refs in DB
 	next()
 }
 
