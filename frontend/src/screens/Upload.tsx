@@ -75,24 +75,32 @@ const Upload = ({ createFlashMessage }: UploadProps) => {
 			setLoading(true)
 
 			DocService.uploadDoc(file).catch((err) => {
-				createFlashMessage("File wasn't saved in the DB", 'warning')
+				createFlashMessage(
+					"Le document n'est pas sauvegardé dans la base de donnée",
+					'error'
+				)
 				console.log(err)
 			})
 
-			await AnalysisService.analyse(file).catch((err) => {
-				createFlashMessage("Couldn't analyse", 'warning')
-				console.log(err)
-			})
+			const analysisResponse = await AnalysisService.analyse(file).catch(
+				(err) => {
+					createFlashMessage(
+						"une erreur est survenue lors de l'analyse",
+						'error'
+					)
+					console.log(err)
+				}
+			)
 
 			setLoading(false)
 
 			//check if analysis ok before changing page
 			history.push({
 				pathname: '/analysis',
-				state: { file: file },
+				state: { file: file, analysis: analysisResponse },
 			})
 		} catch (err) {
-			createFlashMessage('An error occured', 'error')
+			createFlashMessage('Une erreur est survenue', 'error')
 			console.log(err)
 		}
 	}

@@ -111,7 +111,12 @@ const App = () => {
 							if (!loggedIn) return <Redirect to="/" />
 
 							if (location.state && location.state.file)
-								return <Analysis file={location.state.file} />
+								return (
+									<Analysis
+										file={location.state.file}
+										analysis={location.state.analysis}
+									/>
+								)
 							else return <Redirect to="/upload" />
 						}}
 					/>
