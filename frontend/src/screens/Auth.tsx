@@ -48,14 +48,14 @@ function LoginForm(props: any) {
 					'authToken',
 					JSON.stringify(data.token)
 				)
-				props.createFlashMessage('Welcome back ' + data.user.first_name)
+				props.createFlashMessage(
+					'Vous êtes connecté, ' + data.user.first_name
+				)
 				// reload page to jump to right screen
 				location.reload()
 			})
 			.catch((err: ErrorEvent) => {
-				props.createFlashMessage(
-					"Couldn't login.\nWrong email or password."
-				)
+				props.createFlashMessage('Email ou mot de passe incorrect')
 				console.log(err)
 			})
 	}
@@ -133,7 +133,8 @@ function RegisterForm(props: any) {
 			})
 			.catch((err: ErrorEvent) => {
 				props.createFlashMessage(
-					'Couldn\t create account.\nReason: ' + JSON.stringify(err)
+					'La création de compte a échoué. Raison: ' +
+						JSON.stringify(err)
 				)
 				console.log(err)
 			})
