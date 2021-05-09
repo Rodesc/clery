@@ -101,7 +101,7 @@ services:
         environment:
             OPENAI_API_KEY: sk-JpNsZ5FwvdlYP4QvkTP4ujR1d8F3izWH1J7Kl985
             DEEPL_API_KEY: cdc2313d-b0ae-b48e-4e2b-143fb7ad258e:fx
-            DB_HOST: legal-db
+            DB_HOST: clery.francecentral.cloudapp.azure.com
             DB_NAME: fisconet
             DB_PORT: 3005
             DB_USER: root
