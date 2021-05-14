@@ -81,3 +81,12 @@
 	font-size: small;
 	color: white;
 }
+
+.sentence {
+	color: white;
+}
+
+.hoverSentence:hover {
+	text-decoration: underline;
+	cursor: pointer;
+}
