@@ -28,7 +28,7 @@ function findSources (sentences, callback) {
 			const db = client.db(dbName)
 
 			const collection = db.collection('fisconet')
-
+			collection.createIndex( { 'fields.FinFisconetKeywordList': 'text' } ) // improve performances
 
 			for (var j = 0; j < keywords.length ; j++) {
 				const keyword = keywords[j].keyword
