@@ -16,8 +16,6 @@ const Upload = ({ createFlashMessage }: UploadProps) => {
 		// load docs
 		DocService.getDocs()
 			.then((docList) => {
-				console.log('docList')
-				console.log(docList)
 				setDocs(docList)
 			})
 			.catch((err) => {
@@ -31,7 +29,21 @@ const Upload = ({ createFlashMessage }: UploadProps) => {
 		if (fileList.length > 1)
 			createFlashMessage('Only 1 file per analysis', 'warning')
 		const file = fileList[0]
-		setFile(file)
+		if (
+			['pdf', 'doc', 'docx', 'txt'].includes(
+				file?.name.split('.').pop() || ''
+			)
+		) {
+			if (file.name.split('.').pop() == 'pdf') {
+				createFlashMessage(
+					'Les fichiers au format pdf ne sont pas toujours bien déchifrés',
+					'warning'
+				)
+			}
+			setFile(file)
+			return
+		}
+		createFlashMessage('Type de fichier non supporté', 'warning')
 	}
 
 	function displayDocs() {
@@ -112,7 +124,7 @@ const Upload = ({ createFlashMessage }: UploadProps) => {
 					Importez un document et trouvez les références juridiques
 					automatiquement.
 				</h2>
-				<p>Formats acceptés: .pdf, .docx, .txt</p>
+				<p>Formats acceptés: .pdf, .doc, .docx, .txt</p>
 				<div className="uploadWrapper">
 					<label htmlFor="fileField" className="uploadBox">
 						<div className="verticalCenter">
@@ -137,7 +149,7 @@ const Upload = ({ createFlashMessage }: UploadProps) => {
 						</div>
 						<div className="formatInfo">
 							{file
-								? 'Format: ' + file.type
+								? 'Format: ' + file.name.split('.').pop()
 								: 'Formats acceptés: .pdf, .docx, .txt'}
 						</div>
 						<div className="lastModif">
