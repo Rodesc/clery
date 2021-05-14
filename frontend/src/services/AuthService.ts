@@ -1,6 +1,10 @@
 import axios from 'axios'
 
-const url = process.env.GATEWAY_URL || 'http://localhost:3000'
+// parse own url to get gateway endpoint
+const parser = document.createElement('a')
+parser.href = window.location.href
+
+const url = process.env.GATEWAY_URL || 'http://' + parser.hostname + ':3000'
 
 const isAuth = async (token: string) => {
 	const config = {
@@ -22,9 +26,9 @@ const loginUser = async (email: string, password: string) => {
 		console.log(response)
 		return response.data
 	} catch (error) {
-		console.error('error.response.data')
-		console.error(error.response.data) // NOTE - use "error.response.data` (not "error")
-		return error.response.data
+		console.error('Error while signing user in')
+		console.error(error.response.data)
+		throw new Error(error)
 	}
 }
 
@@ -35,9 +39,9 @@ const registerCompanyOwner = async (data: any) => {
 		console.log(response)
 		return response.data
 	} catch (error) {
-		console.error('error.response.data')
-		console.error(error) // NOTE - use "error.response.data` (not "error")
-		return error
+		console.error('Error while creating new user')
+		console.error(error.response.data)
+		throw new Error(error)
 	}
 }
 

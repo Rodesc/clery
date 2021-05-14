@@ -1,6 +1,10 @@
 import axios from 'axios'
 
-const url = process.env.GATEWAY_URL || 'http://localhost:3000'
+// parse own url to get gateway endpoint
+const parser = document.createElement('a')
+parser.href = window.location.href
+
+const url = process.env.GATEWAY_URL || 'http://' + parser.hostname + ':3000'
 
 const getDocs = async () => {
 	const token = localStorage.getItem('authToken') || ''
