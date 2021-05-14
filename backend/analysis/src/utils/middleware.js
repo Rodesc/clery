@@ -123,12 +123,16 @@ const findKeywords = async (req, res, next) => {
 
 	const exp = /["']?[A-Z][^.?!]+((?![.?!]['"]?\\s["']?[A-Z][^.?!]).)+[.?!'"]+/
 	const rx = /[^\.!\?]+[\.!\?]+/g
-	const sentences = text.match(rx)
+	const sentences = text.match(rx) //TODO améliorer detection de phrases
 
 	let sentenceObjectList = []
 
 	for (var i = 0; i < sentences.length; i++) {
-		const translation = await translateToEn(sentences[i])
+		// take three sentences each time to reduce costs
+		// that doesn't seem to word, no match with keywords GPT-3
+		const sentence = sentences[i] // + '\n' + sentences[i + 1] + '\n' + sentences[i + 2]
+
+		const translation = await translateToEn(sentence)
 
 		let keywordList = await matchWithKeywords(translation)
 
@@ -136,6 +140,7 @@ const findKeywords = async (req, res, next) => {
 		keywordList.sort((a, b) => parseFloat(b.score) - parseFloat(a.score))
 
 		keywordList = keywordList
+			.slice(0, 10) //only take 10 best keywords
 			.filter((obj) => {
 				return obj.score >= 80
 			})
@@ -149,7 +154,7 @@ const findKeywords = async (req, res, next) => {
 			})
 
 		sentenceObjectList.push({
-			sentence: sentences[i],
+			sentence: sentence,
 			keywords: keywordList,
 		})
 	}
@@ -159,10 +164,17 @@ const findKeywords = async (req, res, next) => {
 	next()
 }
 
+const db = require('./db')
+
 const findRefs = async (req, res, next) => {
 	console.log('findRefs')
 	// find refs in DB
-	next()
+	const sentences = req.resAnalysis.sentences
+	db.findSources(sentences, (newSentences) => {
+		req.resAnalysis.sentences = newSentences
+		console.log('next')
+		next()
+	})
 }
 
 module.exports = {

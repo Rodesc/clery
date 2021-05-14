@@ -1,5 +1,7 @@
 const express = require('express')
+const { Db } = require('mongodb')
 const multer = require('multer')
+const { getSource } = require('./utils/db')
 const {
 	storeFile,
 	extractText,
@@ -33,12 +35,6 @@ app.use(express.json())
 const port = process.env.port || 80
 
 const upload = multer({ storage: multer.memoryStorage() }).single('file')
-// var storage = multer.diskStorage({
-// 	destination: function (req, file, cb) {
-// 		cb(null, '/tmp/')
-// 	},
-// })
-// const upload = multer({ storage: storage }).single('file')
 
 app.get('/status', (req, res) => {
 	res.status(200).send({ status: 'ok' })
@@ -55,6 +51,15 @@ app.post(
 		res.status(200).send(req.resAnalysis)
 	}
 )
+
+app.get('/source', (req, res) => {
+	console.log('getting source')
+	console.log(req.query)
+	console.log('get source: ' + req.query.id)
+	getSource(req.query.id, (source) => {
+		res.status(200).send(source)
+	})
+})
 
 // start the Express server
 app.listen(port, () => {
