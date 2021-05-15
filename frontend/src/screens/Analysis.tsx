@@ -10,7 +10,7 @@ const Analysis = ({ file, analysis }: AnalysisProps) => {
 	const [totalSources, setTotalSources] = useState(0)
 
 	useEffect(() => {
-		setSentences(analysis.sentences)
+		setSentences(analysis?.sentences)
 	}, [analysis])
 
 	useEffect(() => {
@@ -26,15 +26,17 @@ const Analysis = ({ file, analysis }: AnalysisProps) => {
 			return (
 				<div
 					onClick={() => {
-						setTotalSources(s.sources.length)
-						setSources(s.sources.slice(0, 20))
+						setTotalSources(s.sources?.length)
+						setSources(
+							s.sources?.slice(sliceSource.start, sliceSource.end)
+						)
 					}}
 					key={id}
 				>
 					<span> {id + 1} &nbsp;&nbsp;&nbsp;&nbsp; </span>
 					<span
 						className={
-							s.sources.length != 0
+							s.sources?.length != 0
 								? 'sentence hoverSentence'
 								: 'sentence'
 						}
@@ -72,7 +74,7 @@ const Analysis = ({ file, analysis }: AnalysisProps) => {
 					</div>
 					<span className="fileName">filename</span>
 					<span className="nbRefs">
-						{sources.length}/{totalSources} références affichées
+						{sources?.length}/{totalSources} références affichées
 					</span>
 					<span className="nbRefs">X MB</span>
 				</div>
