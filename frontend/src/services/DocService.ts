@@ -14,11 +14,10 @@ const getDocs = async () => {
 	}
 
 	const response = await axios.get(url + '/files', config)
-	console.log('response')
+
 	if (response === null) {
 		return []
 	}
-	console.log(response.data)
 	return response.data
 }
 
@@ -65,17 +64,23 @@ const download = async (id: string) => {
 }
 
 const deleteDoc = async (id: string) => {
-	console.log('Uploading document')
+	console.log('Deleting document')
 	const token = localStorage.getItem('authToken') || ''
 
 	const config = {
 		headers: { Authorization: `Bearer ${token.replace(/['"]+/g, '')}` },
 	}
 
-	const response = await axios.delete(url + '/file', config).catch((err) => {
-		return false
-	})
+	const response = await axios
+		.delete(url + '/file/' + id, config)
+		.catch((err) => {
+			console.log('Error')
+			console.log(err)
+			return false
+		})
 	if (response === null) {
+		console.log('response is null')
+
 		return false
 	}
 	console.log(response)

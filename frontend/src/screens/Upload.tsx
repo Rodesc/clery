@@ -14,6 +14,7 @@ const Upload = ({ createFlashMessage }: UploadProps) => {
 
 	useEffect(() => {
 		// load docs
+		console.log('getting docs..')
 		DocService.getDocs()
 			.then((docList) => {
 				setDocs(docList)
@@ -70,7 +71,7 @@ const Upload = ({ createFlashMessage }: UploadProps) => {
 	async function deleteFile(id: string) {
 		const isDel = await DocService.deleteDoc(id)
 
-		if (isDel) {
+		if (!isDel) {
 			console.log('Problème lors de la suppression du fichier')
 			createFlashMessage(
 				'Problème lors de la suppression du fichier',
