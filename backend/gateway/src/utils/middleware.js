@@ -1,4 +1,3 @@
-// const moment = require('moment')
 const jwt = require('jsonwebtoken')
 
 // 	var payload = {
@@ -14,8 +13,6 @@ function decodeToken(token) {
 }
 
 const isAuthAttachPayload = async (req, res, next) => {
-	console.log('isAuthAttachPayload')
-
 	const authorization = req.header('Authorization')
 	if (!authorization) {
 		return res.status(401).send({
@@ -29,9 +26,6 @@ const isAuthAttachPayload = async (req, res, next) => {
 		const payload = decodeToken(token)
 
 		req.payload = payload
-		// req.user_id = payload.user_id
-		// req.company_id = payload.company_id
-		// req.is_owner = payload.is_owner
 
 		next()
 	} catch (err) {
