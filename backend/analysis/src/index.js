@@ -2,7 +2,12 @@ const express = require('express')
 const { Db } = require('mongodb')
 const multer = require('multer')
 const { getSource } = require('./utils/db')
-const { extractText, findKeywords, findRefs } = require('./utils/middleware')
+const {
+	extractText,
+	findKeywords,
+	findRefs,
+	findSourcesAsync,
+} = require('./utils/middleware')
 
 const app = express()
 
@@ -35,16 +40,20 @@ app.get('/status', (req, res) => {
 	res.status(200).send({ status: 'ok' })
 })
 
-app.post(
-	'/analysis',
-	upload,
-	extractText,
-	findKeywords,
-	findRefs,
-	(req, res) => {
-		res.status(200).send(req.resAnalysis)
-	}
-)
+// app.post(
+// 	'/analysis',
+// 	upload,
+// 	extractText,
+// 	findKeywords,
+// 	findRefs,
+// 	(req, res) => {
+// 		res.status(200).send(req.resAnalysis)
+// 	}
+// )
+
+app.post('/analysis', upload, extractText, findSourcesAsync, (req, res) => {
+	res.status(200).send(req.resAnalysis)
+})
 
 app.get('/source', (req, res) => {
 	console.log('getting source')

@@ -30,7 +30,7 @@ function findSources (sentences, callback) {
 			const collection = db.collection('fisconet')
 			// collection.createIndex( { 'fields.FinFisconetKeywordList': 'text' } ) // improve performances
 			// collection.createIndex( { keywords: 1 } ) // improve performances
-
+			let promises = [] 
 			for (var j = 0; j < keywords.length ; j++) {
 				const keyword = keywords[j].keyword
 				
@@ -39,9 +39,13 @@ function findSources (sentences, callback) {
 
 				// Using multikey index on keywords: 
 				const query = { keywords: keyword }
-				const found = await collection.find(query).project(projection).toArray()
-				sourceList.push(...found)
+				const foundPromise = collection.find(query).project(projection).toArray()
+				promises.push(foundPromise)
 			}
+
+			sourceList = await Promise.all(promises)
+
+			sourceList = sourceList.flat()
 
 			sourceList = sourceList.filter((item, pos, self) => {
 				return self.indexOf(item) == pos
@@ -52,6 +56,46 @@ function findSources (sentences, callback) {
 		
 		callback(newSentences)
 	})
+}
+
+
+async function findSourcesForKeywords (keywordsPromise, originalKeyword) {
+	console.log('findSourcesForKeyword originally: ' + JSON.stringify(originalKeyword))
+	let keywords = await keywordsPromise
+	keywords = keywords.map((obj) => {
+		return obj.metadata.original
+	})
+	let promises = []
+
+	keywords.forEach((keyword) => {
+		promises.push(findSourcesForKeyword(keyword))
+	})
+	console.log(originalKeyword+ '=> Keyword promise resolved: ' + JSON.stringify(keywords))
+	
+	return Promise.all(promises)
+}
+
+async function findSourcesForKeyword(keyword, originalKeyword) {
+	const projection = {'fields.Title': 1, 'fields.FinFisconetDispSummary':1, 'fields.FinFisconetDocumentType_FR':1, 'fields.FinFisconetDocumentDate':1, originalKeyword:1 }
+	try {
+		const client = await MongoClient.connect(mongoURI)
+
+		const db = client.db(dbName)
+
+		const collection = db.collection('fisconet')
+
+		// Using multikey index on keywords: 
+		const query = { keywords: keyword }
+		return collection.find(query).project(projection).map((doc)=>{
+			// doc.originalKeyword=originalKeyword
+			return {...doc, originalKeyword}
+		}).toArray()
+		// return collection.find(query).project(projection).toArray()
+	} catch (error) {
+			console.log('MongoClient Connection error in findSourcesForKeyword')
+			console.log(error)
+			return []
+	}
 }
 
 
@@ -79,5 +123,6 @@ function getSource (id, callback) {
 
 module.exports = {
 	findSources,
+	findSourcesForKeywords,
 	getSource
 }

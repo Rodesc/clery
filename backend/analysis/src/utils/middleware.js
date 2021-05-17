@@ -87,13 +87,13 @@ const matchWithKeywords = async (sentenceEN, max_rerank = MAX_RERANK) => {
 		return gptResponse.data.data
 	} catch (err) {
 		console.log('Error retrieving data')
-		const message = err.response.data.error.message
-		if (message != undefined) {
-			console.log(message)
-		} else {
+		try {
+			console.log(err.response.data.error.message)
+		} catch (error) {
 			console.log(err)
+		} finally {
+			return []
 		}
-		return []
 	}
 }
 
@@ -177,7 +177,7 @@ const findKeywords = async (req, res, next) => {
 			keyword = sentenceKeywords[j]
 			const matchingKeyWords = await matchWithKeywords(
 				keyword,
-				// max_rerank
+				// max_rerank =
 				Math.max(
 					Math.round((MAX_RERANK * 1.0) / sentenceKeywords.length),
 					1
@@ -226,8 +226,73 @@ const findRefs = async (req, res, next) => {
 	})
 }
 
+/* =========== NEW ASYNC WAY =========== */
+const findSourcesAsync = async (req, res, next) => {
+	const text = req.resAnalysis.fileContent
+
+	const sentences = extractSentences(text)
+
+	let sourceObjectPromises = []
+	for (var i = 0; i < sentences.length; i++) {
+		const promise = findSourcesForSentence(sentences[i])
+		sourceObjectPromises.push(promise)
+	}
+	console.log('Waiting for sentence objects to resolve')
+	let sourceObjects = await Promise.all(sourceObjectPromises)
+	console.log('sourceObjects resolved => ' + sourceObjects.length)
+	sourceObjects = sourceObjects.map((sourceArray) => {
+		return sourceArray.flat().filter((item, pos, self) => {
+			//filter out duplicates
+			//this may take a lot of time
+			return self.indexOf(item) == pos
+		})
+	})
+	req.resAnalysis.sentences = []
+	for (var i = 0; i < sentences.length; i++) {
+		const object = {
+			sentence: sentences[i],
+			sources: sourceObjects[i].flat(),
+		}
+		req.resAnalysis.sentences.push(object)
+	}
+
+	console.log('Done')
+	next()
+}
+
+const findSourcesForSentence = async (sentence) => {
+	// pseudo:
+	//		translate sentence to english
+	//		extract keywords with gpt3
+	// 		match keywords together with gpt3 search
+	//		find sources in DB with matching keywords
+	console.log('Finding sources for sentence: ' + sentence)
+	const translation = await translateToEn(sentence)
+
+	const sentenceKeywords = await extractKeywords(translation)
+
+	let sourcesPromises = []
+	for (var j = 0; j < sentenceKeywords.length; j++) {
+		keyword = sentenceKeywords[j]
+
+		max_rerank = Math.max(
+			Math.round((MAX_RERANK * 1.0) / sentenceKeywords.length),
+			1
+		)
+
+		const keywordsPromise = matchWithKeywords(keyword, max_rerank)
+
+		sourcesPromises.push(
+			db.findSourcesForKeywords(keywordsPromise, keyword)
+		)
+	}
+
+	return Promise.all(sourcesPromises)
+}
+
 module.exports = {
 	extractText,
 	findKeywords,
 	findRefs,
+	findSourcesAsync,
 }
