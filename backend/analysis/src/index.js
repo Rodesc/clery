@@ -2,12 +2,7 @@ const express = require('express')
 const { Db } = require('mongodb')
 const multer = require('multer')
 const { getSource } = require('./utils/db')
-const {
-	storeFile,
-	extractText,
-	findKeywords,
-	findRefs,
-} = require('./utils/middleware')
+const { extractText, findKeywords, findRefs } = require('./utils/middleware')
 
 const app = express()
 
@@ -43,7 +38,6 @@ app.get('/status', (req, res) => {
 app.post(
 	'/analysis',
 	upload,
-	storeFile,
 	extractText,
 	findKeywords,
 	findRefs,
