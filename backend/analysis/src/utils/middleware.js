@@ -1,43 +1,11 @@
-const storeFile = async (req, res, next) => {
-	console.log('storeFile')
-	req.resAnalysis = {}
-
-	// const data = new FormData()
-	// console.log(req.file)
-	// data.append('file', fs.createReadStream(req.file.path))
-
-	// Reflect.ownKeys(req.body).forEach((key) => {
-	// 	console.log(key)
-	// 	data.append(key, req.body[key])
-	// })
-
-	// // let config = {
-	// // 	headers: {
-	// // 		Authorization: req.header('Authorization'),
-	// // 		...data.getHeaders(),
-	// // 	},
-	// // }
-	// let config = {
-	// 	headers: req.headers,
-	// }
-
-	// const auth = await axios.get('http://gateway/auth/', config)
-	// const payload = auth.data.payload
-
-	// const response2 = await axios.post(
-	// 	`http://documents/file/${payload.user_id}`,
-	// 	req.body,
-	// 	config
-	// )
-	// console.log('response2')
-	// console.log(response2.data)
-	next()
-}
-
-var textract = require('textract')
+/* =========== Text extraction =========== */
+const textract = require('textract')
 
 const extractText = async (req, res, next) => {
-	console.log('extractText')
+	// initialise object to send back
+	req.resAnalysis = {}
+
+	console.log('Extracting text')
 	const config = {
 		preserveLineBreaks: true,
 		preserveOnlyMultipleLineBreaks: true,
@@ -55,12 +23,15 @@ const extractText = async (req, res, next) => {
 					message: error,
 				})
 			}
+
+			console.log('Extracted text')
 			req.resAnalysis.fileContent = fileContent
 			next()
 		}
 	)
 }
 
+/* =========== Text translation =========== */
 const DEEPL_API_KEY = process.env.DEEPL_API_KEY
 
 const axios = require('axios')
@@ -88,13 +59,16 @@ const translateToEn = async (sentence) => {
 	}
 }
 
+/* =========== Keyword extraction and matching =========== */
+const MAX_RERANK = 8
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY
 
-const matchWithKeywords = async (sentenceEN) => {
+const matchWithKeywords = async (sentenceEN, max_rerank = MAX_RERANK) => {
 	try {
 		const data = {
 			file: 'file-jj9YN7GJs6xF8ay9ERmsFy3g', // small: file-fd3kYLtD6dynAzM0vwM2VLaw
 			query: sentenceEN,
+			max_rerank: max_rerank,
 			return_metadata: true,
 		}
 
@@ -112,18 +86,79 @@ const matchWithKeywords = async (sentenceEN) => {
 		)
 		return gptResponse.data.data
 	} catch (err) {
-		console.log(err.response)
-		console.log('error retrieving data')
-		return {}
+		console.log('Error retrieving data')
+		try {
+			console.log(err.response.data.error.message)
+		} catch (error) {
+			console.log(err)
+		} finally {
+			return []
+		}
 	}
+}
+
+const extractKeywords = async (sentenceEN) => {
+	try {
+		const engine = 'curie-instruct-beta'
+		const data = {
+			prompt:
+				'Extract keywords from the following text.\n\nText:' +
+				sentenceEN +
+				'\n\nKeywords:',
+			temperature: 0.3,
+			max_tokens: 60,
+			top_p: 1,
+			frequency_penalty: 0.9,
+			presence_penalty: 0.9,
+			stop: ['\n'],
+		}
+
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${OPENAI_API_KEY}`,
+			},
+		}
+
+		const gptResponse = await axios.post(
+			'https://api.openai.com/v1/engines/curie-instruct-beta/completions',
+			data,
+			config
+		)
+
+		console.log(
+			'Keywords extracted for \n"' +
+				sentenceEN +
+				'"\n => ' +
+				gptResponse.data.choices[0].text
+		)
+		const keywords = gptResponse.data.choices[0].text.split(', ')
+		return keywords
+	} catch (err) {
+		console.log('Error retrieving data')
+		const message = err.response.data.error.message
+		if (message != undefined) {
+			console.log(message)
+		} else {
+			console.log(err)
+		}
+		return []
+	}
+}
+
+/* Extract sentences from text */
+const nlp = require('./compromise-tokenize')
+const extractSentences = (text) => {
+	const doc = nlp(text)
+
+	const sentences = doc.json().map((o) => o.text)
+	return sentences
 }
 
 const findKeywords = async (req, res, next) => {
 	const text = req.resAnalysis.fileContent
 
-	const exp = /["']?[A-Z][^.?!]+((?![.?!]['"]?\\s["']?[A-Z][^.?!]).)+[.?!'"]+/
-	const rx = /[^\.!\?]+[\.!\?]+/g
-	const sentences = text.match(rx) //TODO améliorer detection de phrases
+	const sentences = extractSentences(text)
 
 	let sentenceObjectList = []
 
@@ -134,15 +169,30 @@ const findKeywords = async (req, res, next) => {
 
 		const translation = await translateToEn(sentence)
 
-		let keywordList = await matchWithKeywords(translation)
+		const sentenceKeywords = await extractKeywords(translation)
+
+		let keywordList = []
+
+		for (var j = 0; j < sentenceKeywords.length; j++) {
+			keyword = sentenceKeywords[j]
+			const matchingKeyWords = await matchWithKeywords(
+				keyword,
+				// max_rerank =
+				Math.max(
+					Math.round((MAX_RERANK * 1.0) / sentenceKeywords.length),
+					1
+				)
+			)
+			keywordList = keywordList.concat(matchingKeyWords)
+		}
 
 		// sort and clean each object of keywordList
 		keywordList.sort((a, b) => parseFloat(b.score) - parseFloat(a.score))
 
 		keywordList = keywordList
-			.slice(0, 10) //only take 10 best keywords
+			.slice(0, MAX_RERANK + 2)
 			.filter((obj) => {
-				return obj.score >= 80
+				return obj.score >= 120
 			})
 			.map((obj) => {
 				let newObj = {}
@@ -164,22 +214,85 @@ const findKeywords = async (req, res, next) => {
 	next()
 }
 
+/* =========== Reference finding =========== */
 const db = require('./db')
 
 const findRefs = async (req, res, next) => {
-	console.log('findRefs')
 	// find refs in DB
 	const sentences = req.resAnalysis.sentences
 	db.findSources(sentences, (newSentences) => {
 		req.resAnalysis.sentences = newSentences
-		console.log('next')
 		next()
 	})
 }
 
+/* =========== NEW ASYNC WAY =========== */
+const findSourcesAsync = async (req, res, next) => {
+	const text = req.resAnalysis.fileContent
+
+	const sentences = extractSentences(text)
+
+	let sourceObjectPromises = []
+	for (var i = 0; i < sentences.length; i++) {
+		const promise = findSourcesForSentence(sentences[i])
+		sourceObjectPromises.push(promise)
+	}
+	console.log('Waiting for sentence objects to resolve')
+	let sourceObjects = await Promise.all(sourceObjectPromises)
+	console.log('sourceObjects resolved => ' + sourceObjects.length)
+	sourceObjects = sourceObjects.map((sourceArray) => {
+		return sourceArray.flat().filter((item, pos, self) => {
+			//filter out duplicates
+			//this may take a lot of time
+			return self.indexOf(item) == pos
+		})
+	})
+	req.resAnalysis.sentences = []
+	for (var i = 0; i < sentences.length; i++) {
+		const object = {
+			sentence: sentences[i],
+			sources: sourceObjects[i].flat(),
+		}
+		req.resAnalysis.sentences.push(object)
+	}
+
+	console.log('Done')
+	next()
+}
+
+const findSourcesForSentence = async (sentence) => {
+	// pseudo:
+	//		translate sentence to english
+	//		extract keywords with gpt3
+	// 		match keywords together with gpt3 search
+	//		find sources in DB with matching keywords
+	console.log('Finding sources for sentence: ' + sentence)
+	const translation = await translateToEn(sentence)
+
+	const sentenceKeywords = await extractKeywords(translation)
+
+	let sourcesPromises = []
+	for (var j = 0; j < sentenceKeywords.length; j++) {
+		keyword = sentenceKeywords[j]
+
+		max_rerank = Math.max(
+			Math.round((MAX_RERANK * 1.0) / sentenceKeywords.length),
+			1
+		)
+
+		const keywordsPromise = matchWithKeywords(keyword, max_rerank)
+
+		sourcesPromises.push(
+			db.findSourcesForKeywords(keywordsPromise, keyword)
+		)
+	}
+
+	return Promise.all(sourcesPromises)
+}
+
 module.exports = {
-	storeFile,
 	extractText,
 	findKeywords,
 	findRefs,
+	findSourcesAsync,
 }

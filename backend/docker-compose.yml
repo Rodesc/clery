@@ -1,12 +1,12 @@
 version: '3'
 
 services:
-    frontend:
-        image: rodesc/clery-frontend:latest
-        ports: ['80:3000']
-        restart: always
-        environment:
-            GATEWAY_URL: 'http://clery.francecentral.cloudapp.azure.com:3000'
+    # frontend:
+    #     image: rodesc/clery-frontend:latest
+    #     ports: ['80:3000']
+    #     restart: always
+    #     environment:
+    #         GATEWAY_URL: 'http://clery.francecentral.cloudapp.azure.com:3000'
 
     # gateway microservice
     gateway:
@@ -17,13 +17,13 @@ services:
             JWT_KEY: 1284f18a8a027173483a1cd563db5c51
 
     ########################## Users #############################
-    users-viewer:
-        image: phpmyadmin/phpmyadmin
-        environment: ['PMA_ARBITRARY=1', 'PMA_HOST=users-db']
-        restart: always
-        ports: ['8080:80']
-        volumes: ['/sessions']
-        depends_on: ['users-db']
+    # users-viewer:
+    #     image: phpmyadmin/phpmyadmin
+    #     environment: ['PMA_ARBITRARY=1', 'PMA_HOST=users-db']
+    #     restart: always
+    #     ports: ['8080:80']
+    #     volumes: ['/sessions']
+    #     depends_on: ['users-db']
 
     # database of users
     users-db:
@@ -61,25 +61,25 @@ services:
         environment:
             DB_HOST: documents-db
             DB_NAME: documents
-            DB_PORT: 27017
+            DB_PORT: 3006
             DB_USER: root
             DB_PASSWORD: clerypassword
 
-    file-viewer:
-        image: mongo-express
-        restart: always
-        ports: ['8081:8081']
-        depends_on: ['documents-db']
-        environment:
-            ME_CONFIG_MONGODB_ADMINUSERNAME: root
-            ME_CONFIG_MONGODB_ADMINPASSWORD: clerypassword
-            ME_CONFIG_MONGODB_SERVER: documents-db
-            ME_CONFIG_MONGODB_PORT: 27017
+    # file-viewer:
+    #     image: mongo-express
+    #     restart: always
+    #     ports: ['8081:8081']
+    #     depends_on: ['documents-db']
+    #     environment:
+    #         ME_CONFIG_MONGODB_ADMINUSERNAME: root
+    #         ME_CONFIG_MONGODB_ADMINPASSWORD: clerypassword
+    #         ME_CONFIG_MONGODB_SERVER: documents-db
+    #         ME_CONFIG_MONGODB_PORT: 3006
 
     # file database
     documents-db:
         image: mongo:3
-        ports: ['27017:27017']
+        command: mongod --port 3006
         restart: always
         volumes:
             [
@@ -95,13 +95,13 @@ services:
     # analysis microservice
     analysis:
         image: rodesc/clery-analysis:latest
-        # depends_on: ['gateway']
+        depends_on: ['legal-db']
         ports: ['3004:80']
         restart: always
         environment:
             OPENAI_API_KEY: sk-JpNsZ5FwvdlYP4QvkTP4ujR1d8F3izWH1J7Kl985
             DEEPL_API_KEY: cdc2313d-b0ae-b48e-4e2b-143fb7ad258e:fx
-            DB_HOST: clery.francecentral.cloudapp.azure.com
+            DB_HOST: legal-db
             DB_NAME: fisconet
             DB_PORT: 3005
             DB_USER: root
@@ -120,7 +120,7 @@ services:
     # file database
     legal-db:
         image: mongo:3
-        ports: ['3005:27017']
+        command: mongod --port 3005
         restart: always
         volumes:
             [
@@ -132,14 +132,14 @@ services:
             MONGO_INITDB_ROOT_PASSWORD: clerypassword
             MONGO_INITDB_DATABASE: fisconet
 
-    legal-viewer:
-        image: mongo-express
-        restart: always
-        ports: ['8082:8081']
-        depends_on: ['legal-db']
-        environment:
-            ME_CONFIG_MONGODB_ADMINUSERNAME: root
-            ME_CONFIG_MONGODB_ADMINPASSWORD: clerypassword
-            ME_CONFIG_BASICAUTH_USERNAME: root
-            ME_CONFIG_BASICAUTH_PASSWORD: clerypassword
-            ME_CONFIG_MONGODB_SERVER: legal-db
+    # legal-viewer:
+    #     image: mongo-express
+    #     restart: always
+    #     ports: ['8082:8081']
+    #     depends_on: ['legal-db']
+    #     environment:
+    #         ME_CONFIG_MONGODB_ADMINUSERNAME: root
+    #         ME_CONFIG_MONGODB_ADMINPASSWORD: clerypassword
+    #         ME_CONFIG_BASICAUTH_USERNAME: root
+    #         ME_CONFIG_BASICAUTH_PASSWORD: clerypassword
+    #         ME_CONFIG_MONGODB_SERVER: legal-db

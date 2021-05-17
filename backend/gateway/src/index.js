@@ -22,6 +22,7 @@ const port = process.env.PORT || 80
 
 // authentication
 app.get('/auth', tku.isAuthAttachPayload, (req, res) => {
+	console.log('/auth ' + req.payload.user_id)
 	res.status(200).send({
 		payload: req.payload,
 		message: 'Valid token, you are authenticated',
@@ -31,47 +32,53 @@ app.get('/auth', tku.isAuthAttachPayload, (req, res) => {
 // users API gateway
 app.get('/user/:email/:password', (req, res) => {
 	res.redirect(
-		308,
+		307,
 		`http://${req.hostname}:3001/user/${req.params.email}/${req.params.password}`
 	)
 })
 
 app.get('/user/:token', (req, res) => {
-	res.redirect(308, `http://${req.hostname}:3001/user/${req.params.token}`)
+	res.redirect(307, `http://${req.hostname}:3001/user/${req.params.token}`)
 })
 
 app.post('/companyowner', (req, res) => {
-	res.redirect(308, `http://${req.hostname}:3001/companyowner`)
+	console.log(`post /companyowner`)
+	res.redirect(307, `http://${req.hostname}:3001/companyowner`)
 })
 
 // documents API gateway
 app.post('/file', tku.isAuthAttachPayload, (req, res) => {
-	res.redirect(308, `http://${req.hostname}:3003/file/${req.payload.user_id}`)
+	console.log('Saving file for ' + req.payload.user_id)
+	res.redirect(307, `http://${req.hostname}:3003/file/${req.payload.user_id}`)
 })
 
 app.get('/files', tku.isAuthAttachPayload, (req, res) => {
+	console.log('get /docs uid: ' + req.payload.user_id)
 	res.redirect(
-		308,
+		307,
 		`http://${req.hostname}:3003/files/${req.payload.user_id}`
 	)
 })
 
 app.get('/file/:id', tku.isAuthAttachPayload, (req, res) => {
-	res.redirect(308, `http://${req.hostname}:3003/file/${req.params.id}`)
+	console.log(`get /file/${req.params.id} uid: ${req.payload.user_id}`)
+	res.redirect(307, `http://${req.hostname}:3003/file/${req.params.id}`)
 })
 
 app.delete('/file/:id', tku.isAuthAttachPayload, (req, res) => {
-	res.redirect(308, `http://${req.hostname}:3003/file/${req.params.id}`)
+	console.log(`delete /file/${req.params.id} uid: ${req.payload.user_id}`)
+	res.redirect(307, `http://${req.hostname}:3003/file/${req.params.id}`)
 })
 
 // analysis API gateway
 app.post('/analysis', tku.isAuthAttachPayload, (req, res) => {
-	res.redirect(308, `http://${req.hostname}:3004/analysis`)
+	console.log(`post /analysis uid: ${req.payload.user_id}`)
+	res.redirect(307, `http://${req.hostname}:3004/analysis`)
 })
 
 app.get('/source', tku.isAuthAttachPayload, (req, res) => {
 	res.redirect(
-		308,
+		307,
 		`http://${req.hostname}:3004/source?id=${encodeURIComponent(
 			req.query.id
 		)}`

@@ -23,13 +23,8 @@ let storage = new GridFsStorage({
 	},
 	file: (req, file) => {
 		console.log(file.originalname)
-		// const match = ['application/pdf', 'image/jpeg']
 
-		// if (match.indexOf(file.mimetype) === -1) {
-		// 	console.log('Unsupported filetype:' + file.mimetype)
-		// 	const filename = `${Date.now()}-${file.originalname}`
-		// 	return filename
-		// }
+		// TODO check for supported filetype
 
 		return {
 			bucketName: 'docs',
@@ -45,6 +40,7 @@ let storage = new GridFsStorage({
 const upload = multer({ storage: storage })
 
 const getFiles = (req, res) => {
+	console.log('getting files for ' + req.params.uid)
 	//Connect to the MongoDB client
 	MongoClient.connect(mongoURI, async (err, client) => {
 		if (err) {
@@ -62,6 +58,7 @@ const getFiles = (req, res) => {
 			.find({ 'metadata.user_id': parseInt(req.params.uid) })
 			.toArray()
 
+		console.log(`Found ${fileList.length} files`)
 		res.status(201).send(fileList)
 	})
 }
@@ -76,7 +73,6 @@ const deleteFileById = (req, res) => {
 					message: err.errMsg,
 				})
 			}
-			console.log('deleteFileById: connected to DB')
 
 			const db = client.db(dbName)
 
@@ -84,7 +80,7 @@ const deleteFileById = (req, res) => {
 			const collectionChunks = db.collection('docs.chunks')
 
 			const doc_id = new ObjectId(req.params.id)
-			console.log('deleteFileById: doc_id' + doc_id.toString())
+			console.log('deleteFileById: doc_id = ' + doc_id.toString())
 
 			collection.deleteOne({ _id: doc_id }).catch((err) => {
 				res.status(500).send({

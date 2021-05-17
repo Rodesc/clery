@@ -4,6 +4,9 @@
 /backend/tmp
 /*/user-data
 /backend/user-data
+backend/legal_db/
+
+clery_ssh_public.pem
 
 # dependencies
 node_modules/
