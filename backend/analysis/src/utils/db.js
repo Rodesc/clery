@@ -28,13 +28,18 @@ function findSources (sentences, callback) {
 			const db = client.db(dbName)
 
 			const collection = db.collection('fisconet')
-			collection.createIndex( { 'fields.FinFisconetKeywordList': 'text' } ) // improve performances
+			// collection.createIndex( { 'fields.FinFisconetKeywordList': 'text' } ) // improve performances
+			// collection.createIndex( { keywords: 1 } ) // improve performances
 
 			for (var j = 0; j < keywords.length ; j++) {
 				const keyword = keywords[j].keyword
-				// const query = {'fields.FinFisconetKeywordList': {"$regex": `.*${keyword}.*`}}
-				const query = { $text: { $search: `"${keyword}"` } }
-				const found= await collection.find(query).project(projection).toArray()
+				
+				// Using a text index:
+				// const query = { $text: { $search: `"${keyword}"` } }
+
+				// Using multikey index on keywords: 
+				const query = { keywords: keyword }
+				const found = await collection.find(query).project(projection).toArray()
 				sourceList.push(...found)
 			}
 
