@@ -40,17 +40,6 @@ app.get('/status', (req, res) => {
 	res.status(200).send({ status: 'ok' })
 })
 
-// app.post(
-// 	'/analysis',
-// 	upload,
-// 	extractText,
-// 	findKeywords,
-// 	findRefs,
-// 	(req, res) => {
-// 		res.status(200).send(req.resAnalysis)
-// 	}
-// )
-
 app.post('/analysis', upload, extractText, findSourcesAsync, (req, res) => {
 	res.status(200).send(req.resAnalysis)
 })

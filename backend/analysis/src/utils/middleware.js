@@ -233,13 +233,14 @@ const findSourcesAsync = async (req, res, next) => {
 	const sentences = extractSentences(text)
 
 	let sourceObjectPromises = []
+
 	for (var i = 0; i < sentences.length; i++) {
 		const promise = findSourcesForSentence(sentences[i])
 		sourceObjectPromises.push(promise)
 	}
-	console.log('Waiting for sentence objects to resolve')
+
 	let sourceObjects = await Promise.all(sourceObjectPromises)
-	console.log('sourceObjects resolved => ' + sourceObjects.length)
+
 	sourceObjects = sourceObjects.map((sourceArray) => {
 		return sourceArray.flat().filter((item, pos, self) => {
 			//filter out duplicates

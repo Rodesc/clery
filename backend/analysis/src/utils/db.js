@@ -86,11 +86,11 @@ async function findSourcesForKeyword(keyword, originalKeyword) {
 
 		// Using multikey index on keywords: 
 		const query = { keywords: keyword }
-		return collection.find(query).project(projection).map((doc)=>{
-			// doc.originalKeyword=originalKeyword
-			return {...doc, originalKeyword}
-		}).toArray()
-		// return collection.find(query).project(projection).toArray()
+		// return collection.find(query).project(projection).map((doc)=>{
+		// 	// doc.originalKeyword=originalKeyword
+		// 	return {...doc, originalKeyword}
+		// }).toArray()
+		return collection.find(query).project(projection).toArray()
 	} catch (error) {
 			console.log('MongoClient Connection error in findSourcesForKeyword')
 			console.log(error)
