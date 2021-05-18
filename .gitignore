@@ -35,3 +35,4 @@ node_modules/
 
 /*/.eslintrc.json
 /*/.prettierrc
+clery_ssh_public.pem

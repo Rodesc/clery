@@ -23,7 +23,6 @@ const loginUser = async (email: string, password: string) => {
 		const response = await axios.get(
 			url + '/user/' + email + '/' + password
 		)
-		console.log(response)
 		return response.data
 	} catch (error) {
 		console.error('Error while signing user in')
@@ -36,7 +35,6 @@ const registerCompanyOwner = async (data: any) => {
 	try {
 		console.log('registerCompanyOwner')
 		const response = await axios.post(url + '/companyowner', data)
-		console.log(response)
 		return response.data
 	} catch (error) {
 		console.error('Error while creating new user')
@@ -45,8 +43,24 @@ const registerCompanyOwner = async (data: any) => {
 	}
 }
 
+const getUser = async () => {
+	try {
+		const token = localStorage.getItem('authToken') || ''
+
+		const config = {
+			headers: { Authorization: `Bearer ${token.replace(/['"]+/g, '')}` },
+		}
+		const response = await axios.get(url + '/user', config)
+		return response.data
+	} catch (error) {
+		console.error('Error while getting user with token')
+		console.error(error)
+	}
+}
+
 export default {
 	isAuth,
 	loginUser,
 	registerCompanyOwner,
+	getUser,
 }

@@ -54,12 +54,16 @@ const Analysis = ({ file, analysis }: AnalysisProps) => {
 		const sentenceElems = sources?.map((s: Source, id: number) => {
 			const content = s?._id
 			const summary = s?.fields.FinFisconetDispSummary
+			const type = s?.fields.FinFisconetDocumentType_FR
+			const date = s?.fields.FinFisconetDocumentDate
 			counter += 1
 			return (
 				<RefComponent
 					nb={counter}
 					title={content}
 					key={s?._id}
+					type={type}
+					date={date}
 					_id={s?._id}
 					summary={summary}
 				/>
@@ -76,7 +80,11 @@ const Analysis = ({ file, analysis }: AnalysisProps) => {
 					<span className="nbRefs">
 						{sources?.length}/{totalSources} références affichées
 					</span>
-					<span className="nbRefs">X MB</span>
+				</div>
+				<div id="filtering">
+					<div>page 1</div>
+					<div>Type</div>
+					<div>Date</div>
 				</div>
 				<div style={{ margin: '8px' }}>
 					Cliquez sur le texte pour voir les références associées
@@ -101,17 +109,14 @@ const Analysis = ({ file, analysis }: AnalysisProps) => {
 	)
 }
 
-const RefComponent = ({ nb, title, summary, _id }: any) => {
+const RefComponent = ({ nb, title, summary, type, date, _id }: any) => {
 	const displayRefHTML = async (id: string) => {
-		console.log(id)
-		const rx = /.* - (\d{6})/g
 		const idNum = id.slice(id.length - 6, id.length)
 		console.log(idNum)
 		await AnalysisService.getSource(idNum).then((data) => {
-			console.log(data.htmlFile)
 			const dataURI =
-				'data:text/html;base64,' +
-				btoa(unescape(encodeURIComponent(data.htmlFile)))
+				'data:text/html;charset=utf-8,' +
+				encodeURIComponent(data.htmlFile)
 			const win = window.open()
 			win?.document.write(
 				'<iframe src="' +
@@ -128,18 +133,30 @@ const RefComponent = ({ nb, title, summary, _id }: any) => {
 		backgroundColor: '#2F3142',
 		boxShadow: '0px 0px 10px 0px #212330',
 
+		overflow: 'hidden',
 		cursor: 'pointer',
 		borderRadius: '8px',
 	}
-	const refTitle = {}
+	const refTitle: CSSProperties = {
+		whiteSpace: 'nowrap',
+
+		display: 'flex',
+		flexDirection: 'row',
+	}
+	const dateStyle: CSSProperties = {
+		position: 'absolute',
+		right: '8px',
+	}
+
 	const refExtract = {}
 
 	return (
 		<div style={refComponent} onClick={() => displayRefHTML(_id)}>
 			<div style={refTitle}>
-				{nb}. {title}
+				{nb}. <div>{title}</div> <div>{date}</div>
 			</div>
 			<span style={refExtract}>{summary}</span>
+			<div>Type: {type}</div>
 		</div>
 	)
 }
@@ -165,7 +182,11 @@ type Keyword = {
 type Source = {
 	_id: string
 	title: string
-	fields: { FinFisconetDispSummary: string }
+	fields: {
+		FinFisconetDispSummary: string
+		FinFisconetDocumentDate: string
+		FinFisconetDocumentType_FR: string
+	}
 }
 
 type AnalysisProps = {

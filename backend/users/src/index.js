@@ -9,11 +9,11 @@ app.use(function (req, res, next) {
 	res.setHeader('Access-Control-Allow-Origin', '*')
 	res.setHeader(
 		'Access-Control-Allow-Methods',
-		'GET, POST, OPTIONS, PUT, PATCH, DELETE'
+		'GET,HEAD,OPTIONS,POST,PUT,DELETE'
 	)
 	res.setHeader(
 		'Access-Control-Allow-Headers',
-		'X-Requested-With,content-type'
+		'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Authorization, Access-Control-Request-Headers'
 	)
 	res.setHeader('Access-Control-Allow-Credentials', true)
 	next()
@@ -26,7 +26,7 @@ const port = process.env.port || 80
 
 app.get('/user/:email/:password', db.getUser)
 
-app.get('/user/:token', db.getUserByToken)
+app.get('/user', db.getUserByToken)
 
 app.post('/companyowner', encryptPassword, db.createCompanyOwner)
 

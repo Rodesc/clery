@@ -37,8 +37,9 @@ app.get('/user/:email/:password', (req, res) => {
 	)
 })
 
-app.get('/user/:token', (req, res) => {
-	res.redirect(307, `http://${req.hostname}:3001/user/${req.params.token}`)
+app.get('/user', tku.isAuthAttachPayload, (req, res) => {
+	console.log(`get /user by token`)
+	res.redirect(307, `http://${req.hostname}:3001/user`)
 })
 
 app.post('/companyowner', (req, res) => {
