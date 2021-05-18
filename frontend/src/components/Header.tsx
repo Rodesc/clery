@@ -17,7 +17,10 @@ function header(props: headerProps) {
 			</p>
 			<div id="identification">
 				{loggedIn ? (
-					<Button value="Déconnexion" action={logOut} />
+					<>
+						<Button value="Déconnexion" action={logOut} />
+						<Link to="/account">Mon compte</Link>
+					</>
 				) : (
 					<>
 						<LinkButton value="S'enregistrer" linkTo="/register" />

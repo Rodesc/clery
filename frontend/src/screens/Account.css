@@ -1,0 +1,81 @@
+#accountPageContent {
+	position: absolute;
+	top: 0;
+
+	display: flex;
+
+	min-height: 100vh;
+	width: 100%;
+
+	z-index: -1;
+}
+/* ========= INFO PANEL ========= */
+#infoPanel {
+	margin: 0 auto;
+	width: 80%;
+	/* border: 1px solid red; */
+}
+
+#infoPanel .nameBar {
+	position: relative;
+
+	display: flex;
+	flex-direction: row;
+
+	align-items: baseline;
+}
+
+#infoPanel .nameBar > * {
+	margin-right: 8px;
+}
+
+#infoPanel .nameBar Button {
+	position: absolute;
+	right: 0;
+}
+
+#entreprise {
+	display: flex;
+	flex-direction: row;
+	align-items: baseline;
+	margin: 0 0 16px 0;
+}
+
+#logInfo {
+	margin: 16px 0 32px 0;
+}
+
+/* ========= MODIF PANEL ========= */
+#modifPanel {
+	margin: 0 auto;
+	width: 80%;
+}
+
+#modifPanel .nameBar {
+	position: relative;
+
+	display: flex;
+	flex-direction: row;
+
+	align-items: baseline;
+}
+
+#modifPanel .nameBar > * {
+	margin-right: 8px;
+}
+
+#modifPanel .nameBar Button {
+	position: absolute;
+	right: 0;
+}
+
+#entreprise {
+	display: flex;
+	flex-direction: row;
+	align-items: baseline;
+	margin: 0 0 16px 0;
+}
+
+#logInfo {
+	margin: 16px 0 32px 0;
+}

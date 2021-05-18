@@ -1,6 +1,8 @@
 import Auth from './screens/Auth'
 import Upload from './screens/Upload'
 import Analysis from './screens/Analysis'
+import Account from './screens/Account'
+
 import Header from './components/Header'
 import FlashMessages, { flashMessage } from './components/FlashMessages'
 
@@ -100,6 +102,14 @@ const App = () => {
 							<Redirect to="/login" />
 						) : (
 							<Upload createFlashMessage={createFlashMessage} />
+						)}
+					</Route>
+
+					<Route path="/account">
+						{!loggedIn ? (
+							<Redirect to="/login" />
+						) : (
+							<Account createFlashMessage={createFlashMessage} />
 						)}
 					</Route>
 
