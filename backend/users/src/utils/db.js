@@ -9,9 +9,171 @@ const pool = mariadb.createPool({
 	database: process.env.DB_NAME,
 })
 
-function createCompanyEmployee(user) {}
+// Create a company employee. This can only be done as company owner
+const createEmployee = async (req, res, next) => {
+	const { first_name, last_name, email, password } = req.body
 
-const createCompanyOwner = async (req, res, next) => {
+	const payload = tku.decodeToken(getToken(req))
+	const company_id = payload.company_id
+	const is_owner = payload.is_owner
+
+	if (!is_owner) {
+		return res.status(403).json({
+			message: 'You are not the owner of a company',
+		})
+	}
+
+	pool.getConnection()
+		.then(async (conn) => {
+			console.log('connected')
+			// hash password
+			// insert into users
+			const hashed_pass = await bcrypt.hashSync(
+				password,
+				bcrypt.genSaltSync()
+			)
+
+			const user_query = `INSERT INTO users VALUES (0,
+										'${first_name}', 
+										'${last_name}', 
+										'${email}', 
+										'${hashed_pass}', 
+										'${company_id}', 
+										FALSE, 
+										CURDATE());`
+
+			const new_user = await conn.query(user_query)
+
+			const user_id = new_user.insertId
+
+			const user = {
+				id: user_id,
+				first_name,
+				last_name,
+				email,
+				is_owner: 0,
+			}
+
+			console.log('Employee created')
+			conn.release()
+			res.status(201).send({
+				status: 'success',
+				token: tku.encodeToken(user_id, company_id, false),
+				user: user,
+			})
+		})
+		.catch((err) => {
+			const msg =
+				'Error while communicating with database, email might be used already.'
+			console.log(err)
+			res.status(500).json({ message: msg, error: err })
+		})
+}
+
+// Get the token from the Authorization header of req (request)
+const getToken = (req) => {
+	const authorization = req.header('Authorization')
+	if (!authorization) {
+		return res.status(401).send({
+			message: 'No bearer token provided',
+		})
+	}
+	return authorization.replace('Bearer ', '')
+}
+
+// Update the password of user
+const updatePassword = async (req, res, next) => {
+	const { old_pass, new_pass } = req.body
+
+	const payload = tku.decodeToken(getToken(req))
+	const user_id = payload.user_id
+
+	pool.getConnection()
+		.then(async (conn) => {
+			// Get old password from user
+			const queryUser = `SELECT * FROM users WHERE id = ${user_id}`
+
+			const user = await conn.query(queryUser)
+
+			if (!user || (user && user.length == 0)) {
+				return res.status(403).json({ message: "User doesn't exist" })
+			}
+
+			// Check if old password is correct
+			const isPasswordMatch = await bcrypt.compareSync(
+				old_pass,
+				user[0].password
+			)
+
+			if (!isPasswordMatch) {
+				return res
+					.status(403)
+					.json({ message: 'Old password is not correct' })
+			}
+
+			// Update table with new password
+			const hashed_pass = await bcrypt.hashSync(
+				new_pass,
+				bcrypt.genSaltSync()
+			)
+			await conn.query(
+				`UPDATE users SET password='${hashed_pass}' WHERE id=${user_id};`
+			)
+
+			// done
+			conn.release()
+			console.log('User password updated')
+
+			res.status(201).send({
+				status: 'success',
+			})
+		})
+		.catch((err) => {
+			const msg = 'Error while communicating with database.'
+			console.log(err)
+			return res.status(500).json({ message: msg, error: err })
+		})
+}
+
+// Update the first_name, last_name, email & company_name of a user
+const updateUser = async (req, res, next) => {
+	const { first_name, last_name, email, company_name } = req.body
+
+	const payload = tku.decodeToken(getToken(req))
+	const company_id = payload.company_id
+	const user_id = payload.user_id
+	const is_owner = payload.is_owner
+
+	pool.getConnection()
+		.then(async (conn) => {
+			// Update user
+			await conn.query(
+				`UPDATE users SET first_name='${first_name}', last_name='${last_name}', email='${email}' WHERE id=${user_id};`
+			)
+
+			if (is_owner) {
+				// Update company name
+				await conn.query(
+					`UPDATE companies SET company_name='${company_name}' WHERE id=${company_id};`
+				)
+			}
+
+			conn.release()
+			console.log('User updated')
+
+			res.status(201).send({
+				status: 'success',
+			})
+		})
+		.catch((err) => {
+			const msg =
+				'Error while communicating with database, email might be used already.'
+			console.log(err)
+			return res.status(500).json({ message: msg, error: err })
+		})
+}
+
+const createOwner = async (req, res, next) => {
 	try {
 		const { first_name, last_name, password, email, company_name } =
 			await req.body
@@ -120,33 +282,40 @@ async function getUser(req, res) {
 	console.log('getUser')
 	pool.getConnection()
 		.then(async (conn) => {
-			console.log('connected')
-			const queryUser = `SELECT * FROM users WHERE email = '${email}'`
+			// Get user with email
+			const user = await conn.query(
+				`SELECT * FROM users WHERE email = '${email}'`
+			)
 
-			const user = await conn.query(queryUser)
-			console.log(user[0])
-
+			// Check if email exists
 			if (!user || (user && user.length == 0)) {
 				return res.status(403).json({ message: "Email doesn't exist" })
 			}
 
+			// Check password match
 			const isPasswordMatch = await bcrypt.compareSync(
 				password,
 				user[0].password
 			)
-
 			if (!isPasswordMatch) {
 				return res
 					.status(403)
 					.json({ message: 'Your password is not correct' })
 			}
-			const company_name = 'TODO'
+
+			// Get company name
+			const company = await conn.query(
+				`SELECT company_name FROM companies WHERE id=${user[0].company_id};`
+			)
+			const company_name = company[0].company_name
+
 			const user_info = extractUserInfo({ ...user[0], company_name })
 
+			console.log('User logged in:')
 			console.log(user_info)
 
-			console.log('Success')
 			conn.release()
+
 			res.status(201).send({
 				status: 'success',
 				token: tku.encodeToken(
@@ -159,6 +328,7 @@ async function getUser(req, res) {
 		})
 		.catch((err) => {
 			const msg = 'Error while communicating with database'
+			console.log(err)
 			return res.status(500).json({ message: msg, error: err })
 		})
 }
@@ -193,8 +363,11 @@ function extractUserInfo(user) {
 module.exports = {
 	// loginUser,
 	// logoutUser,
-	createCompanyOwner,
+	createOwner,
+	createEmployee,
 	getUser,
 	getUserByToken,
+	updateUser,
+	updatePassword,
 	pool,
 }

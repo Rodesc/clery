@@ -43,8 +43,23 @@ app.get('/user', tku.isAuthAttachPayload, (req, res) => {
 })
 
 app.post('/companyowner', (req, res) => {
-	console.log(`post /companyowner`)
-	res.redirect(307, `http://${req.hostname}:3001/companyowner`)
+	console.log(`post /owner`)
+	res.redirect(307, `http://${req.hostname}:3001/owner`)
+})
+
+app.post('/employee', tku.isAuthAttachPayload, (req, res) => {
+	console.log(`post /employee`)
+	res.redirect(307, `http://${req.hostname}:3001/employee`)
+})
+
+app.post('/user', tku.isAuthAttachPayload, (req, res) => {
+	console.log(`post /user, updating`)
+	res.redirect(307, `http://${req.hostname}:3001/user`)
+})
+
+app.post('/password', tku.isAuthAttachPayload, (req, res) => {
+	console.log(`post /password, changing`)
+	res.redirect(307, `http://${req.hostname}:3001/password`)
 })
 
 // documents API gateway

@@ -28,12 +28,18 @@ app.get('/user/:email/:password', db.getUser)
 
 app.get('/user', db.getUserByToken)
 
-app.post('/companyowner', encryptPassword, db.createCompanyOwner)
+app.post('/owner', encryptPassword, db.createOwner)
 
 app.get('/status', (req, res) => {
 	console.log({ status: 'ok' })
 	res.status(200).send({ status: 'ok' })
 })
+
+app.post('/user', db.updateUser)
+
+app.post('/password', db.updatePassword)
+
+app.post('/employee', db.createEmployee)
 
 // start the Express server
 app.listen(port, () => {
