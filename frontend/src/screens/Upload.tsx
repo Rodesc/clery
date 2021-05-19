@@ -2,6 +2,7 @@ import './Upload.css'
 import { ChangeEvent, MouseEvent, useEffect, useState } from 'react'
 import { Button } from '../components/Button'
 import Loader from '../components/Loader'
+import FileElem from '../components/FileElem'
 import { useHistory } from 'react-router-dom'
 import DocService from '../services/DocService'
 import AnalysisService from '../services/AnalysisService'
@@ -200,64 +201,10 @@ const Upload = ({ createFlashMessage }: UploadProps) => {
 	)
 }
 
-const FileElem = (props: {
-	file_id: string
-	type: string
-	filename: string
-	date: string
-	fileSize: string
-	deleteFile: Function
-}) => {
-	const date = new Date(props.date)
-	async function downloadFile() {
-		await DocService.download(props.file_id).then((dataURI) => {
-			const win = window.open()
-			win?.document.write(
-				'<iframe src="' +
-					dataURI +
-					'" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>'
-			)
-		})
-	}
-	return (
-		<div className="fileElem">
-			<div className="fileType">
-				{' '}
-				<p>{props.type}</p>{' '}
-			</div>
-			<span className="fileName">{props.filename}</span>
-			<span className="nbRefs">
-				{`
-				${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}
-				${date.getHours()}h${date.getMinutes()}
-				`}
-			</span>
-			<img
-				src="img/download.svg"
-				onClick={() => downloadFile()}
-				style={{
-					padding: '36px 16px 36px 16px',
-					height: '24px',
-					cursor: 'pointer',
-				}}
-			/>
-			<img
-				src="img/trashbin.svg"
-				onClick={() => props.deleteFile(props.file_id)}
-				style={{
-					padding: '32px 24px 32px 16px',
-					height: '32px',
-					cursor: 'pointer',
-				}}
-			/>
-		</div>
-	)
-}
-
 type UploadProps = {
 	createFlashMessage: (text: string, type: string) => void
 }
-type Doc = {
+export type Doc = {
 	_id: string
 	length: BigInteger
 	chunkSize: BigInteger

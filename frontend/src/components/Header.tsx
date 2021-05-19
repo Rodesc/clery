@@ -13,7 +13,7 @@ function header(props: headerProps) {
 		<header>
 			<img id="logo" alt="logo" src="img/Logo.png" />
 			<p id="brand">
-				<Link to="/">Clery.ai</Link>
+				<Link to={loggedIn ? '/upload' : '/login'}>Clery.ai</Link>
 			</p>
 			<div id="identification">
 				{loggedIn ? (
