@@ -3,7 +3,7 @@ version: '3'
 services:
     frontend:
         image: rodesc/clery-frontend:latest
-        ports: ['80:3000']
+        ports: ['80:80']
         restart: always
         environment:
             GATEWAY_URL: 'http://clery.francecentral.cloudapp.azure.com:3000'
@@ -130,6 +130,7 @@ services:
         environment:
             ME_CONFIG_MONGODB_ADMINUSERNAME: root
             ME_CONFIG_MONGODB_ADMINPASSWORD: clerypassword
+            ME_CONFIG_MONGODB_PORT: 3005
             ME_CONFIG_BASICAUTH_USERNAME: root
             ME_CONFIG_BASICAUTH_PASSWORD: clerypassword
             ME_CONFIG_MONGODB_SERVER: legal-db
