@@ -7,6 +7,8 @@ const pool = mariadb.createPool({
 	user: process.env.DB_USER,
 	password: process.env.DB_PASSWORD,
 	database: process.env.DB_NAME,
+	idleTimeout: 1000,
+	connectionLimit: 30,
 })
 
 // Create a company employee. This can only be done as company owner
@@ -168,8 +170,9 @@ const updateUser = async (req, res, next) => {
 		.catch((err) => {
 			const msg =
 				'Error while communicating with database, email might be used already.'
+
 			console.log(err)
-			return res.status(500).json({ message: msg, error: err })
+			res.status(400).json({ message: msg, error: err })
 		})
 }
 
@@ -369,5 +372,4 @@ module.exports = {
 	getUserByToken,
 	updateUser,
 	updatePassword,
-	pool,
 }
