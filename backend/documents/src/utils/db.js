@@ -160,14 +160,14 @@ const getFileById = (req, res) => {
 
 						let fileData = []
 						for (let i = 0; i < chunks.length; i++) {
-							fileData.push(chunks[i].data.toString('base64'))
+							fileData.push(chunks[i].data.toString('utf8'))
 						}
 
 						//Display the chunks using the data URI format
 						let finalFile =
 							'data:' +
 							docs[0].contentType +
-							';base64,' +
+							';charset=utf-8,' +
 							fileData.join('')
 
 						res.status(200).send({
