@@ -2,12 +2,7 @@ const express = require('express')
 const { Db } = require('mongodb')
 const multer = require('multer')
 const { getSource } = require('./utils/db')
-const {
-	extractText,
-	findKeywords,
-	findRefs,
-	findSourcesAsync,
-} = require('./utils/middleware')
+const { extractText, findSourcesAsync } = require('./utils/middleware')
 
 const app = express()
 
@@ -45,8 +40,6 @@ app.post('/analysis', upload, extractText, findSourcesAsync, (req, res) => {
 })
 
 app.get('/source', (req, res) => {
-	console.log('getting source')
-	console.log(req.query)
 	console.log('get source: ' + req.query.id)
 	getSource(req.query.id, (source) => {
 		res.status(200).send(source)

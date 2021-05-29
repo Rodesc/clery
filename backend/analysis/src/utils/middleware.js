@@ -1,6 +1,18 @@
-/* =========== Text extraction =========== */
 const textract = require('textract')
+const db = require('./db')
+const axios = require('axios')
+const querystring = require('querystring')
+const nlp = require('./compromise-tokenize')
 
+const DEEPL_API_KEY = process.env.DEEPL_API_KEY
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY
+const MAX_RERANK = 8
+
+/* =========== Text extraction =========== */
+/**
+ * Extract the file content from file in request.
+ * This is done using the textract package
+ */
 const extractText = async (req, res, next) => {
 	// initialise object to send back
 	req.resAnalysis = {}
@@ -32,11 +44,9 @@ const extractText = async (req, res, next) => {
 }
 
 /* =========== Text translation =========== */
-const DEEPL_API_KEY = process.env.DEEPL_API_KEY
-
-const axios = require('axios')
-const querystring = require('querystring')
-
+/**
+ * Use Deepl to translate a sentence to English
+ */
 const translateToEn = async (sentence) => {
 	function translate(parameters) {
 		return axios.post(
@@ -55,19 +65,21 @@ const translateToEn = async (sentence) => {
 		})
 		return result.data.translations[0].text
 	} catch (err) {
-		console.error(error)
+		console.error(err)
+		return sentence
 	}
 }
 
-/* =========== Keyword extraction and matching =========== */
-const MAX_RERANK = 8
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY
-
-const matchWithKeywords = async (sentenceEN, max_rerank = MAX_RERANK) => {
+/* =========== Keyword extraction and matching using GPT-3 =========== */
+/**
+ * Find keywords from DB that match with keyword
+ * This is done with GPT-3 semantic search endpoint
+ */
+const matchWithKeywords = async (keyword, max_rerank = MAX_RERANK) => {
 	try {
 		const data = {
 			file: 'file-jj9YN7GJs6xF8ay9ERmsFy3g', // small: file-fd3kYLtD6dynAzM0vwM2VLaw
-			query: sentenceEN,
+			query: keyword,
 			max_rerank: max_rerank,
 			return_metadata: true,
 		}
@@ -97,6 +109,10 @@ const matchWithKeywords = async (sentenceEN, max_rerank = MAX_RERANK) => {
 	}
 }
 
+/**
+ * Use GPT-3 to extract keywords from a sentence
+ * Return a list of keywords
+ */
 const extractKeywords = async (sentenceEN) => {
 	try {
 		const engine = 'curie-instruct-beta'
@@ -146,8 +162,10 @@ const extractKeywords = async (sentenceEN) => {
 	}
 }
 
-/* Extract sentences from text */
-const nlp = require('./compromise-tokenize')
+/**
+ * Extract sentences from continuous string (text)
+ * Done with compromise https://github.com/spencermountain/compromise
+ */
 const extractSentences = (text) => {
 	const doc = nlp(text)
 
@@ -155,99 +173,32 @@ const extractSentences = (text) => {
 	return sentences
 }
 
-const findKeywords = async (req, res, next) => {
-	const text = req.resAnalysis.fileContent
-
-	const sentences = extractSentences(text)
-
-	let sentenceObjectList = []
-
-	for (var i = 0; i < sentences.length; i++) {
-		// take three sentences each time to reduce costs
-		// that doesn't seem to word, no match with keywords GPT-3
-		const sentence = sentences[i] // + '\n' + sentences[i + 1] + '\n' + sentences[i + 2]
-
-		const translation = await translateToEn(sentence)
-
-		const sentenceKeywords = await extractKeywords(translation)
-
-		let keywordList = []
-
-		for (var j = 0; j < sentenceKeywords.length; j++) {
-			keyword = sentenceKeywords[j]
-			const matchingKeyWords = await matchWithKeywords(
-				keyword,
-				// max_rerank =
-				Math.max(
-					Math.round((MAX_RERANK * 1.0) / sentenceKeywords.length),
-					1
-				)
-			)
-			keywordList = keywordList.concat(matchingKeyWords)
-		}
-
-		// sort and clean each object of keywordList
-		keywordList.sort((a, b) => parseFloat(b.score) - parseFloat(a.score))
-
-		keywordList = keywordList
-			.slice(0, MAX_RERANK + 2)
-			.filter((obj) => {
-				return obj.score >= 120
-			})
-			.map((obj) => {
-				let newObj = {}
-				newObj.keyword = obj.metadata.original
-				newObj.keywordEN = obj.text
-				newObj.language = obj.metadata.source_lang
-				newObj.score = obj.score
-				return newObj
-			})
-
-		sentenceObjectList.push({
-			sentence: sentence,
-			keywords: keywordList,
-		})
-	}
-
-	req.resAnalysis.sentences = sentenceObjectList
-
-	next()
-}
-
-/* =========== Reference finding =========== */
-const db = require('./db')
-
-const findRefs = async (req, res, next) => {
-	// find refs in DB
-	const sentences = req.resAnalysis.sentences
-	db.findSources(sentences, (newSentences) => {
-		req.resAnalysis.sentences = newSentences
-		next()
-	})
-}
-
-/* =========== NEW ASYNC WAY =========== */
+/**
+ * Find sources in an ASYNC way after extracting filecontent
+ * Calls next() once all the sentences have been matched with sources
+ */
 const findSourcesAsync = async (req, res, next) => {
 	const text = req.resAnalysis.fileContent
 
 	const sentences = extractSentences(text)
 
+	// Analyse all sentences concurrently
 	let sourceObjectPromises = []
-
 	for (var i = 0; i < sentences.length; i++) {
 		const promise = findSourcesForSentence(sentences[i])
 		sourceObjectPromises.push(promise)
 	}
-
 	let sourceObjects = await Promise.all(sourceObjectPromises)
 
 	sourceObjects = sourceObjects.map((sourceArray) => {
 		return sourceArray.flat().filter((item, pos, self) => {
 			//filter out duplicates
-			//this may take a lot of time
+			//this may impact performances
 			return self.indexOf(item) == pos
 		})
 	})
+
+	// map sources with sentences
 	req.resAnalysis.sentences = []
 	for (var i = 0; i < sentences.length; i++) {
 		const object = {
@@ -261,17 +212,23 @@ const findSourcesAsync = async (req, res, next) => {
 	next()
 }
 
+/**
+ * Find all sources matching with the sentence and return them
+ * The pseudo algorithm works as follows:
+ * 		translate sentence to english
+ * 		extract keywords with gpt3
+ * 		match keywords together with gpt3 search
+ *      find sources in DB with matching keywords
+ */
 const findSourcesForSentence = async (sentence) => {
-	// pseudo:
-	//		translate sentence to english
-	//		extract keywords with gpt3
-	// 		match keywords together with gpt3 search
-	//		find sources in DB with matching keywords
 	console.log('Finding sources for sentence: ' + sentence)
-	const translation = await translateToEn(sentence)
 
+	// translate sentence to english
+	const translation = await translateToEn(sentence)
+	// extract keywords with gpt3
 	const sentenceKeywords = await extractKeywords(translation)
 
+	// for each keyword match with gpt3 search
 	let sourcesPromises = []
 	for (var j = 0; j < sentenceKeywords.length; j++) {
 		keyword = sentenceKeywords[j]
@@ -281,8 +238,10 @@ const findSourcesForSentence = async (sentence) => {
 			1
 		)
 
+		// one keyword with the best ones from DB
 		const keywordsPromise = matchWithKeywords(keyword, max_rerank)
 
+		// find sources in DB with matching keyword
 		sourcesPromises.push(
 			db.findSourcesForKeywords(keywordsPromise, keyword)
 		)
@@ -293,7 +252,5 @@ const findSourcesForSentence = async (sentence) => {
 
 module.exports = {
 	extractText,
-	findKeywords,
-	findRefs,
 	findSourcesAsync,
 }
