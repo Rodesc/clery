@@ -12,6 +12,9 @@ const mongoURI =
 	`${process.env.DB_PORT}/` +
 	`${dbName}`
 
+/**
+ * Define new storage strategy with GridFS to upload docment to DB
+ */
 let storage = new GridFsStorage({
 	url: mongoURI,
 	options: {
@@ -19,7 +22,6 @@ let storage = new GridFsStorage({
 		useUnifiedTopology: true,
 		connectTimeoutMS: 30000,
 		keepAlive: 1,
-		// auth: { user: process.env.DB_USER, password: process.env.DB_PASSWORD },
 	},
 	file: (req, file) => {
 		console.log(file.originalname)
@@ -36,11 +38,14 @@ let storage = new GridFsStorage({
 		}
 	},
 })
-
 const upload = multer({ storage: storage })
 
+/**
+ * Get file history for user with id == req.params.uid
+ * Only returns the metadata of the files
+ */
 const getFiles = (req, res) => {
-	console.log('getting files for ' + req.params.uid)
+	console.log('Getting files for ' + req.params.uid)
 	//Connect to the MongoDB client
 	MongoClient.connect(mongoURI, async (err, client) => {
 		if (err) {
@@ -59,15 +64,20 @@ const getFiles = (req, res) => {
 			.toArray()
 
 		console.log(`Found ${fileList.length} files`)
-		res.status(201).send(fileList)
+		res.status(200).send(fileList)
 	})
 }
+
+/**
+ * Delete the file metadata and file chunks in database of file with id == req.params.id
+ */
 const deleteFileById = (req, res) => {
-	console.log('deleteFileById')
+	console.log('Deleting file from DB')
 	//Connect to the MongoDB client
 	try {
 		MongoClient.connect(mongoURI, (err, client) => {
 			if (err) {
+				console.log('MongoClient Connection error')
 				res.status(500).send({
 					error: 'MongoClient Connection error',
 					message: err.errMsg,
@@ -110,6 +120,9 @@ const deleteFileById = (req, res) => {
 	}
 }
 
+/**
+ * Return data URI of file with id == req.params.id
+ */
 const getFileById = (req, res) => {
 	//Connect to the MongoDB client
 
@@ -164,6 +177,7 @@ const getFileById = (req, res) => {
 						}
 
 						//Display the chunks using the data URI format
+						// TODO check filetype and return accordingly (base64, utf-8, ...)
 						let finalFile =
 							'data:' +
 							docs[0].contentType +

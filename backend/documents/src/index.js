@@ -3,11 +3,11 @@ const { upload, getFiles, getFileById, deleteFileById } = require('./utils/db')
 const app = express()
 
 app.use(function (req, res, next) {
-	res.setHeader('Access-Control-Allow-Origin', '*') // to enable calls from every domain
+	res.setHeader('Access-Control-Allow-Origin', '*')
 	res.setHeader(
 		'Access-Control-Allow-Methods',
 		'OPTIONS, GET, POST, PUT, PATCH, DELETE'
-	) // allowed actiosn
+	) // allowed methods
 	res.setHeader(
 		'Access-Control-Allow-Headers',
 		'Content-Type, Authorization,X-Requested-With'
@@ -20,16 +20,18 @@ app.use(function (req, res, next) {
 	next()
 })
 app.use(express.json())
-app.use(express.urlencoded({ extended: false })) // parse application/json
+app.use(express.urlencoded({ extended: false }))
 
 const port = process.env.port || 80
 
-// define a route handler for the default home page
 app.get('/status', (req, res) => {
 	console.log(`get request`)
 	res.status(200).send({ status: 'ok' })
 })
 
+/**
+ * Upload a file using GridFS in MongoDB
+ */
 app.post('/file/:uid', upload.single('file'), async (req, res) => {
 	try {
 		return res.status(201).send({
@@ -43,10 +45,19 @@ app.post('/file/:uid', upload.single('file'), async (req, res) => {
 	}
 })
 
+/**
+ * Get file history (metadata) of user with id: uid
+ */
 app.get('/files/:uid', getFiles)
 
+/**
+ * Download file with id: id
+ */
 app.get('/file/:id', getFileById)
 
+/**
+ * Delete the file witd id: id
+ */
 app.delete('/file/:id', deleteFileById)
 
 // start the Express server
