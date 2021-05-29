@@ -1,17 +1,15 @@
 const jwt = require('jsonwebtoken')
 
-// 	var payload = {
-// 		exp: moment().add(14, 'days').unix(),
-// 		iat: moment().unix(),
-// 		user_id: user_id,
-// 		email: email,
-// 		is_owner: is_owner,
-// 	}
-
+/**
+ * Decode the payload of a token
+ */
 function decodeToken(token) {
 	return jwt.verify(token, process.env.JWT_KEY)
 }
 
+/**
+ * Check if request has bearer token and if it is valid
+ */
 const isAuthAttachPayload = async (req, res, next) => {
 	const authorization = req.header('Authorization')
 	if (!authorization) {
