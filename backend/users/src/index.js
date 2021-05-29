@@ -29,16 +29,34 @@ app.get('/status', (req, res) => {
 	res.status(200).send({ status: 'ok' })
 })
 
+/**
+ * Login user with email and password
+ */
 app.get('/user/:email/:password', db.getUser)
 
+/**
+ * Get user information with token
+ */
 app.get('/user', db.getUserByToken)
 
+/**
+ * Create new owner account
+ */
 app.post('/owner', encryptPassword, db.createOwner)
 
+/**
+ * Create new employee account by company owner
+ */
 app.post('/employee', db.createEmployee)
 
+/**
+ * Change password for user with bearer token
+ */
 app.post('/password', db.updatePassword)
 
+/**
+ * Update user with information of req.body
+ */
 app.post('/user', db.updateUser)
 
 // start the Express server

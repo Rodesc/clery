@@ -8,10 +8,12 @@ const pool = mariadb.createPool({
 	password: process.env.DB_PASSWORD,
 	database: process.env.DB_NAME,
 	idleTimeout: 1000,
-	connectionLimit: 30,
+	connectionLimit: 50,
 })
 
-// Create a company employee. This can only be done as company owner
+/**
+ * Create a company employee. This can only be done as company owner
+ */
 const createEmployee = async (req, res, next) => {
 	const { first_name, last_name, email, password } = req.body
 
@@ -72,7 +74,10 @@ const createEmployee = async (req, res, next) => {
 		})
 }
 
-// Get the token from the Authorization header of req (request)
+/**
+ * Helper function
+ * Get the token from the Authorization header of req (request)
+ */
 const getToken = (req) => {
 	const authorization = req.header('Authorization')
 	if (!authorization) {
@@ -83,7 +88,9 @@ const getToken = (req) => {
 	return authorization.replace('Bearer ', '')
 }
 
-// Update the password of user
+/**
+ * Update the password of user
+ */
 const updatePassword = async (req, res, next) => {
 	const { old_pass, new_pass } = req.body
 
@@ -137,7 +144,9 @@ const updatePassword = async (req, res, next) => {
 		})
 }
 
-// Update the first_name, last_name, email & company_name of a user
+/**
+ * Update the first_name, last_name, email & company_name of a user
+ */
 const updateUser = async (req, res, next) => {
 	const { first_name, last_name, email, company_name } = req.body
 
@@ -154,7 +163,7 @@ const updateUser = async (req, res, next) => {
 			)
 
 			if (is_owner) {
-				// Update company name
+				// Update company name only if owner
 				await conn.query(
 					`UPDATE companies SET company_name='${company_name}' WHERE id=${company_id};`
 				)
@@ -176,6 +185,10 @@ const updateUser = async (req, res, next) => {
 		})
 }
 
+/**
+ * Create new user that is owner
+ * Create company as well
+ */
 const createOwner = async (req, res, next) => {
 	try {
 		const { first_name, last_name, password, email, company_name } =
@@ -207,7 +220,7 @@ const createOwner = async (req, res, next) => {
 					email,
 					is_owner: 1,
 				}
-				console.log('Success')
+				console.log('New company and owner created')
 				conn.release()
 				res.status(201).send({
 					status: 'success',
@@ -226,6 +239,9 @@ const createOwner = async (req, res, next) => {
 	}
 }
 
+/**
+ * Return user information based
+ */
 async function getUserByToken(req, res) {
 	console.log('Getting user with token')
 	const authorization = req.header('Authorization')
@@ -279,6 +295,10 @@ async function getUserByToken(req, res) {
 		})
 }
 
+/**
+ * Login user by email and password
+ * Return user information
+ */
 async function getUser(req, res) {
 	const email = req.params.email
 	const password = req.params.password
@@ -336,14 +356,9 @@ async function getUser(req, res) {
 		})
 }
 
-function deleteEmployee(user) {}
-
-function deleteUserCompany(user) {}
-
-function getCompanyEmployees(company) {}
-
-function promoteCompanyEmployee() {}
-
+/**
+ * Helper function to reshape the user information
+ */
 function extractUserInfo(user) {
 	const user_info = (({
 		id,
@@ -364,8 +379,6 @@ function extractUserInfo(user) {
 }
 
 module.exports = {
-	// loginUser,
-	// logoutUser,
 	createOwner,
 	createEmployee,
 	getUser,
