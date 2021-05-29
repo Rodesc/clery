@@ -37,11 +37,6 @@ app.get('/user/:email/:password', (req, res) => {
 	)
 })
 
-app.post('/user', tku.isAuthAttachPayload, (req, res) => {
-	console.log(`post /user, updating`)
-	res.redirect(307, `http://${req.hostname}:3001/user`)
-})
-
 app.get('/user', tku.isAuthAttachPayload, (req, res) => {
 	console.log(`get /user by token`)
 	res.redirect(307, `http://${req.hostname}:3001/user`)
@@ -55,6 +50,11 @@ app.post('/companyowner', (req, res) => {
 app.post('/employee', tku.isAuthAttachPayload, (req, res) => {
 	console.log(`post /employee`)
 	res.redirect(307, `http://${req.hostname}:3001/employee`)
+})
+
+app.post('/user', tku.isAuthAttachPayload, (req, res) => {
+	console.log(`post /user, updating`)
+	res.redirect(307, `http://${req.hostname}:3001/user`)
 })
 
 app.post('/password', tku.isAuthAttachPayload, (req, res) => {

@@ -104,6 +104,7 @@ const newEmployee = async (
 }
 
 const changePass = async (old_pass: string, new_pass: string) => {
+	//TODO
 	try {
 		const token = localStorage.getItem('authToken') || ''
 

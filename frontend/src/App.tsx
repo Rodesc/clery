@@ -69,6 +69,10 @@ const App = () => {
 					deleteFlashMessage={deleteFlashMessage}
 				/>
 				<Switch>
+					{/* <Route path="/">
+						{loggedIn ? <Redirect to="/upload" /> : <></>}
+					</Route> */}
+
 					<Route path="/register">
 						{loggedIn ? (
 							<Redirect to="/upload" />
