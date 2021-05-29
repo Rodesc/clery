@@ -24,22 +24,22 @@ app.use(express.json())
 
 const port = process.env.port || 80
 
+app.get('/status', (req, res) => {
+	console.log({ status: 'ok' })
+	res.status(200).send({ status: 'ok' })
+})
+
 app.get('/user/:email/:password', db.getUser)
 
 app.get('/user', db.getUserByToken)
 
 app.post('/owner', encryptPassword, db.createOwner)
 
-app.get('/status', (req, res) => {
-	console.log({ status: 'ok' })
-	res.status(200).send({ status: 'ok' })
-})
-
-app.post('/user', db.updateUser)
+app.post('/employee', db.createEmployee)
 
 app.post('/password', db.updatePassword)
 
-app.post('/employee', db.createEmployee)
+app.post('/user', db.updateUser)
 
 // start the Express server
 app.listen(port, () => {
