@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '../components/Button'
 import Modal from '../components/Modal'
 import FileElem from '../components/FileElem'
@@ -7,6 +7,9 @@ import DocService from '../services/DocService'
 import './Account.css'
 import { Doc } from './Upload'
 
+/**
+ * Account page
+ */
 const Account = ({ createFlashMessage }: any) => {
 	const [modifying, setModifying] = useState(false)
 	const [docs, setDocs] = useState<Doc[]>([])
@@ -22,8 +25,8 @@ const Account = ({ createFlashMessage }: any) => {
 	const [newUserModal, setNewUserModal] = useState(false)
 	const [modifModal, setModifModal] = useState(false)
 
+	// load the file upload history from the user on page load
 	useEffect(() => {
-		// load docs
 		console.log('getting docs..')
 		DocService.getDocs()
 			.then((docList) => {
@@ -34,6 +37,7 @@ const Account = ({ createFlashMessage }: any) => {
 			})
 	}, [])
 
+	// load user information on page load and when modifying
 	useEffect(() => {
 		AuthService.getUser()
 			.then((user) => {
@@ -45,8 +49,9 @@ const Account = ({ createFlashMessage }: any) => {
 				)
 				console.log(err)
 			})
-	}, [modifying])
+	}, [modifModal])
 
+	// delete file from the database and thus the history
 	async function deleteFile(id: string) {
 		const isDel = await DocService.deleteDoc(id)
 
@@ -62,6 +67,7 @@ const Account = ({ createFlashMessage }: any) => {
 		setDocs(docs?.filter((e: Doc) => e._id !== id))
 	}
 
+	// display all the files from the user's history
 	function displayDocs() {
 		const documentElements = docs
 			?.slice(0)
@@ -151,6 +157,9 @@ const Account = ({ createFlashMessage }: any) => {
 	)
 }
 
+/**
+ * Modal to change the user's information
+ */
 const ModifModal = ({
 	show,
 	handleClose,
@@ -180,6 +189,8 @@ const ModifModal = ({
 
 		console.log(user)
 	}
+
+	/* ===== handler functions =====  */
 
 	const handleFirstName = (event: React.FormEvent<HTMLInputElement>) => {
 		setUser({ ...user, first_name: event.currentTarget.value })
@@ -264,6 +275,9 @@ const ModifModal = ({
 	)
 }
 
+/**
+ * Modal to change the user's password
+ */
 const PwdModal = ({ show, handleClose, createFlashMessage }: any) => {
 	const [pwd, setPwd] = useState({
 		old_pass: '',
@@ -282,6 +296,8 @@ const PwdModal = ({ show, handleClose, createFlashMessage }: any) => {
 				handleClose()
 			})
 	}
+
+	/* ===== handler functions =====  */
 
 	const handleOldPassword = (event: React.FormEvent<HTMLInputElement>) => {
 		setPwd({ ...pwd, old_pass: event.currentTarget.value })
@@ -323,6 +339,9 @@ const PwdModal = ({ show, handleClose, createFlashMessage }: any) => {
 	)
 }
 
+/**
+ * Modal to create an account for a new employee
+ */
 const NewUserModal = ({ show, handleClose, createFlashMessage }: any) => {
 	const [user, setUser] = useState({
 		first_name: '',
@@ -354,6 +373,8 @@ const NewUserModal = ({ show, handleClose, createFlashMessage }: any) => {
 
 		console.log(user)
 	}
+
+	/* ===== handler functions =====  */
 
 	const handleFirstName = (event: React.FormEvent<HTMLInputElement>) => {
 		setUser({ ...user, first_name: event.currentTarget.value })

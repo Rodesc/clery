@@ -6,6 +6,7 @@ parser.href = window.location.href
 
 const url = process.env.GATEWAY_URL || 'http://' + parser.hostname + ':3000'
 
+// Send file to backend for analysis
 const analyse = async (file?: File) => {
 	console.log('Analysing document')
 	if (file === undefined) return {}
@@ -29,6 +30,7 @@ const analyse = async (file?: File) => {
 	return response.data
 }
 
+// get all the content of a particular source from db
 const getSource = async (id: string) => {
 	console.log('getSource')
 

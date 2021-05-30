@@ -1,6 +1,10 @@
 import { CSSProperties } from 'react'
 import DocService from '../services/DocService'
 
+/**
+ * FileElem component
+ * This component is used to display a file from the user's history
+ */
 const FileElem = (props: {
 	file_id: string
 	type: string

@@ -1,3 +1,8 @@
+/**
+ * Contains:
+ * 		- LinkButton component: used to navigate
+ * 		- Button component
+ */
 import {
 	CSSProperties,
 	FunctionComponent,
@@ -6,6 +11,9 @@ import {
 } from 'react'
 import { useHistory } from 'react-router-dom'
 
+/**
+ * Button component used for any purpose
+ */
 const Button = ({ value, customStyle, inactive, action }: buttonProps) => {
 	const style = {
 		...baseBtnStyle,
@@ -18,6 +26,9 @@ const Button = ({ value, customStyle, inactive, action }: buttonProps) => {
 	)
 }
 
+/**
+ * LinkButton component used for navigation between screens
+ */
 const LinkButton = ({ value, customStyle, linkTo, inactive }: buttonProps) => {
 	let goTo: string
 	linkTo ? (goTo = linkTo) : (goTo = '')

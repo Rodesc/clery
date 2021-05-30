@@ -7,14 +7,17 @@ import { useHistory } from 'react-router-dom'
 import DocService from '../services/DocService'
 import AnalysisService from '../services/AnalysisService'
 
+/**
+ * Upload page
+ */
 const Upload = ({ createFlashMessage }: UploadProps) => {
 	const [file, setFile] = useState<File>()
 	const [docs, setDocs] = useState<Doc[]>([])
 	const [loading, setLoading] = useState(false)
 	const history = useHistory()
 
+	// load the file upload history from the user on page load
 	useEffect(() => {
-		// load docs
 		console.log('getting docs..')
 		DocService.getDocs()
 			.then((docList) => {
@@ -25,12 +28,14 @@ const Upload = ({ createFlashMessage }: UploadProps) => {
 			})
 	}, [])
 
+	// Handler function for file upload
 	function handleFile(event: ChangeEvent) {
 		const fileList = (event.target as HTMLInputElement).files
 		if (!fileList) return
 		if (fileList.length > 1)
-			createFlashMessage('Only 1 file per analysis', 'warning')
+			createFlashMessage('Un fichier par analyse', 'warning')
 		const file = fileList[0]
+		// Check file extension
 		if (
 			['pdf', 'doc', 'docx', 'txt'].includes(
 				file?.name.split('.').pop() || ''
@@ -48,6 +53,7 @@ const Upload = ({ createFlashMessage }: UploadProps) => {
 		createFlashMessage('Type de fichier non supporté', 'warning')
 	}
 
+	// display all the files from the user's history
 	function displayDocs() {
 		const documentElements = docs
 			?.slice(0)
@@ -69,6 +75,7 @@ const Upload = ({ createFlashMessage }: UploadProps) => {
 		return <>{documentElements}</>
 	}
 
+	// delete file from the database and thus the history
 	async function deleteFile(id: string) {
 		const isDel = await DocService.deleteDoc(id)
 
@@ -84,17 +91,26 @@ const Upload = ({ createFlashMessage }: UploadProps) => {
 		setDocs(docs?.filter((e: Doc) => e._id !== id))
 	}
 
+	// Start the analysis of the file
 	async function analyse(event: MouseEvent<HTMLButtonElement>) {
 		try {
 			setLoading(true)
 
-			DocService.uploadDoc(file).catch((err) => {
-				createFlashMessage(
-					"Le document n'est pas sauvegardé dans la base de donnée",
-					'error'
-				)
-				console.log(err)
-			})
+			DocService.uploadDoc(file)
+				.then((data) => {
+					console.log(data)
+					createFlashMessage(
+						'Fichier importé sur le serveur, analyse en cours ...',
+						'success'
+					)
+				})
+				.catch((err) => {
+					createFlashMessage(
+						"Le document n'est pas sauvegardé dans la base de donnée",
+						'error'
+					)
+					console.log(err)
+				})
 
 			const analysisResponse = await AnalysisService.analyse(file).catch(
 				(err) => {
@@ -108,7 +124,7 @@ const Upload = ({ createFlashMessage }: UploadProps) => {
 
 			setLoading(false)
 
-			//check if analysis ok before changing page
+			// TODO check if analysis ok before changing page
 			history.push({
 				pathname: '/analysis',
 				state: { file: file, analysis: analysisResponse },

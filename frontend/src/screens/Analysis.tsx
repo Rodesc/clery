@@ -2,6 +2,9 @@ import { CSSProperties, useEffect, useState } from 'react'
 import AnalysisService from '../services/AnalysisService'
 import './Analysis.css'
 
+/**
+ * Analysis page
+ */
 const Analysis = ({ file, analysis }: AnalysisProps) => {
 	const [sentences, setSentences] = useState<Sentence[]>()
 	const [keywords, setKeywords] = useState<Keyword[]>([])
@@ -9,6 +12,7 @@ const Analysis = ({ file, analysis }: AnalysisProps) => {
 	const [sliceSource, setSliceSource] = useState({ start: 0, end: 20 })
 	const [totalSources, setTotalSources] = useState(0)
 
+	// set file content on page load
 	useEffect(() => {
 		setSentences(analysis?.sentences)
 	}, [analysis])
@@ -20,6 +24,7 @@ const Analysis = ({ file, analysis }: AnalysisProps) => {
 	const title = file.name.split('.').slice(0, -1).join('.')
 	const extension = file.name.split('.').pop()
 
+	// display all sentences
 	function displayContent() {
 		const sentenceElem = sentences?.map((s: Sentence, id: number) => {
 			const content = s.sentence
@@ -31,6 +36,12 @@ const Analysis = ({ file, analysis }: AnalysisProps) => {
 							s.sources?.slice(sliceSource.start, sliceSource.end)
 						)
 					}}
+					// style={{
+					// 	display: 'flex',
+					// 	flexDirection: 'row',
+					// 	alignContent: 'baseline',
+					// 	height:
+					// }}
 					key={id}
 				>
 					<span> {id + 1} &nbsp;&nbsp;&nbsp;&nbsp; </span>

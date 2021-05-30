@@ -1,9 +1,9 @@
 import { CSSProperties, MouseEventHandler } from 'react'
 
-type FlashMessagesComponent = {
-	messages?: flashMessage[]
-	deleteFlashMessage: (index: number) => void
-}
+/**
+ * FlashMessages component
+ * This component is the wrapper for the different Alert components that are displayed
+ */
 const FlashMessages = ({
 	messages,
 	deleteFlashMessage,
@@ -21,10 +21,9 @@ const FlashMessages = ({
 	return <div style={alertWrapperStyle}>{Alerts}</div>
 }
 
-type alertComponent = {
-	message: flashMessage
-	deleteFlashMessage: MouseEventHandler<HTMLImageElement>
-}
+/**
+ * Alert component: single flashmessage
+ */
 const Alert = ({ message, deleteFlashMessage }: alertComponent) => {
 	return (
 		<div style={alertStyle} role="alert">
@@ -38,6 +37,21 @@ const Alert = ({ message, deleteFlashMessage }: alertComponent) => {
 	)
 }
 
+type FlashMessagesComponent = {
+	messages?: flashMessage[]
+	deleteFlashMessage: (index: number) => void
+}
+
+type alertComponent = {
+	message: flashMessage
+	deleteFlashMessage: MouseEventHandler<HTMLImageElement>
+}
+
+export type flashMessage = {
+	text: string
+	type: string
+}
+
 const alertStyle: CSSProperties = {
 	margin: '8px auto',
 	padding: '16px',
@@ -47,6 +61,7 @@ const alertStyle: CSSProperties = {
 
 	borderRadius: '8px',
 }
+
 const alertWrapperStyle: CSSProperties = {
 	position: 'fixed',
 	margin: '8px auto',
@@ -54,11 +69,6 @@ const alertWrapperStyle: CSSProperties = {
 	left: '50%',
 	transform: 'translateX(-50%)',
 	width: '400px',
-}
-
-export type flashMessage = {
-	text: string
-	type: string
 }
 
 export default FlashMessages

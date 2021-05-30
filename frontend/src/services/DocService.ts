@@ -6,6 +6,7 @@ parser.href = window.location.href
 
 const url = process.env.GATEWAY_URL || 'http://' + parser.hostname + ':3000'
 
+// Get the file history of the user
 const getDocs = async () => {
 	const token = localStorage.getItem('authToken') || ''
 
@@ -21,6 +22,7 @@ const getDocs = async () => {
 	return response.data
 }
 
+// Upload document to database
 const uploadDoc = async (file?: File) => {
 	console.log('Uploading document')
 	if (file === undefined) return {}
@@ -43,6 +45,7 @@ const uploadDoc = async (file?: File) => {
 	return response.data
 }
 
+// get dataURI of a document from database
 const download = async (id: string) => {
 	console.log('download ' + id)
 
@@ -63,6 +66,7 @@ const download = async (id: string) => {
 	return response.data.imgurl
 }
 
+// delete file from the database and thus the history
 const deleteDoc = async (id: string) => {
 	console.log('Deleting document')
 	const token = localStorage.getItem('authToken') || ''

@@ -42,17 +42,20 @@ const App = () => {
 		}
 	}, [location])
 
+	// display flashMessage with information
 	function createFlashMessage(text: string, type = 'success') {
 		const message: flashMessage = { text, type }
 		setFlashMessages(flashMessages?.concat(message))
 	}
 
+	// close a flashmessage
 	function deleteFlashMessage(index: number) {
 		setFlashMessages(
 			flashMessages?.filter((e) => flashMessages.indexOf(e) !== index)
 		)
 	}
 
+	// log out a user by deleting localstorage
 	function logOutUser(e: Event) {
 		setLoggedIn(false)
 		history.push('/')
@@ -69,10 +72,6 @@ const App = () => {
 					deleteFlashMessage={deleteFlashMessage}
 				/>
 				<Switch>
-					{/* <Route path="/">
-						{loggedIn ? <Redirect to="/upload" /> : <></>}
-					</Route> */}
-
 					<Route path="/register">
 						{loggedIn ? (
 							<Redirect to="/upload" />

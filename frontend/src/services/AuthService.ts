@@ -6,6 +6,7 @@ parser.href = window.location.href
 
 const url = process.env.GATEWAY_URL || 'http://' + parser.hostname + ':3000'
 
+// Check if the user is authenticated by chehcking if the token is valid
 const isAuth = async (token: string) => {
 	const config = {
 		headers: { Authorization: `Bearer ${token.replace(/['"]+/g, '')}` },
@@ -17,6 +18,7 @@ const isAuth = async (token: string) => {
 	return true
 }
 
+// Log user in with email and password
 const loginUser = async (email: string, password: string) => {
 	try {
 		const response = await axios.get(
@@ -30,6 +32,7 @@ const loginUser = async (email: string, password: string) => {
 	}
 }
 
+// register new user of type owner and create company
 const registerCompanyOwner = async (data: any) => {
 	try {
 		console.log('registerCompanyOwner')
@@ -42,6 +45,7 @@ const registerCompanyOwner = async (data: any) => {
 	}
 }
 
+// get user info from server by sending token
 const getUser = async () => {
 	try {
 		const token = localStorage.getItem('authToken') || ''
@@ -58,6 +62,7 @@ const getUser = async () => {
 	}
 }
 
+// update the user's personal information
 const updateUserInfo = async (
 	first_name: string,
 	last_name: string,
@@ -80,13 +85,13 @@ const updateUserInfo = async (
 	}
 }
 
+// as a owner, create a new user for employee
 const newEmployee = async (
 	first_name: string,
 	last_name: string,
 	email: string,
 	password: string
 ) => {
-	//TODO
 	try {
 		const token = localStorage.getItem('authToken') || ''
 
@@ -103,8 +108,8 @@ const newEmployee = async (
 	}
 }
 
+// update user's password
 const changePass = async (old_pass: string, new_pass: string) => {
-	//TODO
 	try {
 		const token = localStorage.getItem('authToken') || ''
 

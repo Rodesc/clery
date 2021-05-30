@@ -1,18 +1,23 @@
 import './Auth.css'
-import Header from '../components/Header'
-import { Button, LinkButton } from '../components/Button'
-import React, { ChangeEvent, useState } from 'react'
-import { Link, useHistory, withRouter } from 'react-router-dom'
+import { Button } from '../components/Button'
+import React, { useState } from 'react'
+import { Link, withRouter } from 'react-router-dom'
 import AuthService from '../services/AuthService'
 
-type authProps = {
-	showLogin: boolean
-	setLoggedIn: Function
-	createFlashMessage: Function
-	logInUser?: Function
-	registerUser?: Function
-}
+// type authProps = {
+// 	showLogin: boolean
+// 	setLoggedIn: Function
+// 	createFlashMessage: Function
+// 	logInUser?: Function
+// 	registerUser?: Function
+// }
 
+/**
+ * Auth page
+ * Contains:
+ * 		- Login page
+ * 		- Register page
+ */
 function Auth(props: any) {
 	return (
 		<div className="authPageContent">
@@ -33,10 +38,14 @@ function Auth(props: any) {
 	)
 }
 
+/**
+ * Login page
+ */
 function LoginForm(props: any) {
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 
+	// Handle the login form submission
 	function logInUser(event: React.MouseEvent<HTMLButtonElement>) {
 		event.preventDefault
 		AuthService.loginUser(email, password)
@@ -59,6 +68,8 @@ function LoginForm(props: any) {
 				console.log(err)
 			})
 	}
+
+	/* ===== handler functions =====  */
 
 	function handleEmailChange(event: React.FormEvent<HTMLInputElement>) {
 		setEmail(event.currentTarget.value)
@@ -100,6 +111,10 @@ function LoginForm(props: any) {
 		</form>
 	)
 }
+
+/**
+ * Register page
+ */
 function RegisterForm(props: any) {
 	const [firstName, setFirstName] = useState('')
 	const [lastName, setLastName] = useState('')
@@ -107,6 +122,7 @@ function RegisterForm(props: any) {
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 
+	// Handle the register form submission
 	function registerUser(event: React.MouseEvent<HTMLButtonElement>) {
 		event.preventDefault
 		const userData = {
@@ -139,6 +155,8 @@ function RegisterForm(props: any) {
 				console.log(err)
 			})
 	}
+
+	/* ===== handler functions =====  */
 
 	function handleFirstNameChange(event: React.FormEvent<HTMLInputElement>) {
 		setFirstName(event.currentTarget.value)

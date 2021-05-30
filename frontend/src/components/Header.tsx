@@ -2,6 +2,9 @@ import './Header.css'
 import { Button, LinkButton } from './Button'
 import { Link } from 'react-router-dom'
 
+/**
+ * Header component displayed on every screen
+ */
 function header(props: headerProps) {
 	const logOut = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		props.logOutUser(e)

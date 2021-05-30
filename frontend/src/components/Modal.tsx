@@ -1,5 +1,8 @@
 import { CSSProperties } from 'react'
 
+/**
+ * Modal component to display additional information to a page
+ */
 const Modal = ({ handleClose, show, children }: any) => {
 	const disp = show ? { display: 'block' } : { display: 'none' }
 
@@ -32,6 +35,7 @@ const modalContainer: CSSProperties = {
 	display: 'flex',
 	justifyContent: 'center',
 }
+
 const modal: CSSProperties = {
 	zIndex: 3,
 	position: 'relative',
