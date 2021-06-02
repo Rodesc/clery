@@ -137,9 +137,9 @@ const Analysis = ({ file, analysis }: AnalysisProps) => {
 				<div id="fileInfo">
 					<div className="fileType">
 						{' '}
-						<p>PDF</p>{' '}
+						<p>{extension}</p>{' '}
 					</div>
-					<span className="fileName">filename</span>
+					<span className="fileName">{title}</span>
 					<span className="nbRefs">{totalVisible} références</span>
 				</div>
 				<div
