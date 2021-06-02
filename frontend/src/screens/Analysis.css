@@ -98,10 +98,54 @@
 
 	height: 40px;
 	border-radius: 0 0 8px 8px;
+	background-color: #2f3142;
 
 	box-shadow: 0px 0px 10px 0px #212330;
 	padding: 0;
+
 	display: flex;
 	flex-direction: row;
+	align-items: center;
+}
+
+#filtering div {
+	margin: auto;
+	display: flex;
+	flex-direction: row;
+}
+
+#filtering img {
+	height: 12px;
+	margin: 4px 8px;
+
+	cursor: pointer;
+
+	filter: invert(100%);
+}
+
+.reverse {
+	transform: scale(-1);
+}
+
+.down {
+	/*Arrow*/
+	transform: rotate(0.25turn);
+}
+
+.up {
+	/*Arrow*/
+	transform: rotate(-0.25turn);
+}
+
+select,
+option {
+	cursor: pointer;
+	width: 25%;
+	padding: 4px 8px;
+	border: none;
+	border-radius: 16px;
+	color: white;
+	font-size: 16px;
+	font-weight: 400;
 	background-color: #2f3142;
 }
