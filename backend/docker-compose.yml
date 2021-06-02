@@ -99,7 +99,7 @@ services:
         ports: ['3004:80']
         restart: always
         environment:
-            OPENAI_API_KEY: sk-JpNsZ5FwvdlYP4QvkTP4ujR1d8F3izWH1J7Kl985
+            OPENAI_API_KEY: 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
             DEEPL_API_KEY: cdc2313d-b0ae-b48e-4e2b-143fb7ad258e:fx
             DB_HOST: legal-db
             DB_NAME: fisconet
