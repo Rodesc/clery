@@ -78,7 +78,7 @@ const translateToEn = async (sentence) => {
 const matchWithKeywords = async (keyword, max_rerank = MAX_RERANK) => {
 	try {
 		const data = {
-			file: 'file-jj9YN7GJs6xF8ay9ERmsFy3g', // small: file-fd3kYLtD6dynAzM0vwM2VLaw
+			file: 'file-1dCvuCIcT9qf3KbH5Yor7QEE', // small: file-fd3kYLtD6dynAzM0vwM2VLaw
 			query: keyword,
 			max_rerank: max_rerank,
 			return_metadata: true,
