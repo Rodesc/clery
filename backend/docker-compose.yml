@@ -31,7 +31,7 @@ services:
         restart: always
         ports: ['3002:5984']
         environment:
-            MYSQL_ROOT_PASSWORD: clerypassword
+            MYSQL_ROOT_PASSWORD: <DB_PASSWORD>
             MYSQL_DATABASE: clery-users
         volumes: [
                 './tmp/user-data:/var/lib/mysql', # database data storage on host
@@ -48,7 +48,7 @@ services:
             DB_HOST: users-db
             DB_NAME: clery-users
             DB_USER: root
-            DB_PASSWORD: clerypassword
+            DB_PASSWORD: <DB_PASSWORD>
             JWT_KEY: 1284f18a8a027173483a1cd563db5c51
 
     ########################## Documents #############################
@@ -63,7 +63,7 @@ services:
             DB_NAME: documents
             DB_PORT: 3006
             DB_USER: root
-            DB_PASSWORD: clerypassword
+            DB_PASSWORD: <DB_PASSWORD>
 
     file-viewer:
         image: mongo-express
@@ -72,7 +72,7 @@ services:
         depends_on: ['documents-db']
         environment:
             ME_CONFIG_MONGODB_ADMINUSERNAME: root
-            ME_CONFIG_MONGODB_ADMINPASSWORD: clerypassword
+            ME_CONFIG_MONGODB_ADMINPASSWORD: <DB_PASSWORD>
             ME_CONFIG_MONGODB_SERVER: documents-db
             ME_CONFIG_MONGODB_PORT: 3006
 
@@ -88,7 +88,7 @@ services:
             ]
         environment:
             MONGO_INITDB_ROOT_USERNAME: root
-            MONGO_INITDB_ROOT_PASSWORD: clerypassword
+            MONGO_INITDB_ROOT_PASSWORD: <DB_PASSWORD>
             MONGO_INITDB_DATABASE: documents
 
     ########################## Analysis #############################
@@ -99,13 +99,13 @@ services:
         ports: ['3004:80']
         restart: always
         environment:
-            OPENAI_API_KEY: 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
-            DEEPL_API_KEY: cdc2313d-b0ae-b48e-4e2b-143fb7ad258e:fx
+            OPENAI_API_KEY: <OPENAI_API_KEY>
+            DEEPL_API_KEY: <DEEPL_API_KEY>
             DB_HOST: legal-db
             DB_NAME: fisconet
             DB_PORT: 3005
             DB_USER: root
-            DB_PASSWORD: clerypassword
+            DB_PASSWORD: <DB_PASSWORD>
 
     # file database
     legal-db:
@@ -119,7 +119,7 @@ services:
             ]
         environment:
             MONGO_INITDB_ROOT_USERNAME: root
-            MONGO_INITDB_ROOT_PASSWORD: clerypassword
+            MONGO_INITDB_ROOT_PASSWORD: <DB_PASSWORD>
             MONGO_INITDB_DATABASE: fisconet
 
     legal-viewer:
@@ -129,8 +129,8 @@ services:
         depends_on: ['legal-db']
         environment:
             ME_CONFIG_MONGODB_ADMINUSERNAME: root
-            ME_CONFIG_MONGODB_ADMINPASSWORD: clerypassword
+            ME_CONFIG_MONGODB_ADMINPASSWORD: <DB_PASSWORD>
             ME_CONFIG_MONGODB_PORT: 3005
             ME_CONFIG_BASICAUTH_USERNAME: root
-            ME_CONFIG_BASICAUTH_PASSWORD: clerypassword
+            ME_CONFIG_BASICAUTH_PASSWORD: <DB_PASSWORD>
             ME_CONFIG_MONGODB_SERVER: legal-db
